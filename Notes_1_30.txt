@@ -1,0 +1,77 @@
+Chez Scheme operations:
+    > (display 2/3)
+    2/3
+
+    > (sqrt -1)
+    0+1i
+
+Binding Values
+- (let ((var expr) ...) body1 body2 ...), this binds an expression to a name - maintains refferential transparency
+- variables are bound to the values by the 'let' operations
+- refer to variables by by 'let' as 'let-bound' variables 
+
+Let X = X
+- beacause expressions in the first position of a procedure application are evaluated no differently from other expressions, a let-bound variable may be used there as well
+- variables bound by let are only visible by let bodies
+
+Let
+- possible to nest let expressions 
+
+Let vs lambda
+- a let expression is nothing more than the direct application of a lambda expression to a set of argument expressions 
+    (let ([x 'a]) (cons x x))
+    and
+    ((lambda (x) (cons x x)) 'a)
+    are the same
+    ex:
+        > (let ([x 'a]) (cons x x))
+        (a . a)
+
+    Note:
+    - (a . a) is a pair, (a a) is a list 
+
+Parameters
+- formal parameter specification can be in any of the following 3 forms
+    - proper list of variables: (var1 ... varn)
+        exactly n parameters must be supplied 
+    - single variable: varr
+        any number of variables is valid
+    - improper list of variables: (var1 ... varn . varr)
+        at least n parameters must be supplied 
+        remaining parameters are wrapped into a list 
+        
+Return a Lambda
+
+    > (define double-any 
+        (lambda (f x)
+            (f x x)))
+    
+    > (double-any + 2)      // + is placed in the f, 2 is placed in the x.
+    4                       // The function changes from (f x x) to (+ 2 2)
+
+    > (double-any cons 'a)
+    (a . a)
+
+Abbreviation
+
+    (define var0
+        (lambda varr
+            e1 e2 ...))
+
+    //can be shortened to:
+    
+    (define (var0 . varr)
+        e1 e2 ...)
+
+    -----------------------
+
+    (define var0
+        (lambda (var1 ... varn . varr)
+            e1 e2 ...))
+    
+    //can be shortened to:
+    
+    (define (var0 var1 ... varn . varr)
+        e1 e2 ...)
+
+
