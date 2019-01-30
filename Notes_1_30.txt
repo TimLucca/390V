@@ -74,4 +74,129 @@ Abbreviation
     (define (var0 var1 ... varn . varr)
         e1 e2 ...)
 
+Procedures
+- a procedure is treated as an object just like a number, string, etc
+- top-level definitions are visible in every expression, except where shadowed by another binding 
+- the most common operation to perform on a procedure is to apply it to one or more values 
+
+Lambda 
+    
+    > ((lambda (x) (+ x x)) (* 3 4))    // here, parameters are evaluated before the procedure is called (evalued inbound)
+    24                                  // scheme tends to evaluate the inner most argument first, then left to right
+    
+
+    > (define doubler                   //nested lambda example
+        (lambda (f)
+            (lambda (x) (f x x))))
+    
+    > ((doubler +) 4)
+    8
+
+    > ((doubler *) 0+1i)
+    -1
+
+Binding
+- values do not have to be bound before being referenced (foreward refferencing)
+- they do have to be bound before being called, however
+- this is a form of lazy evaluation -
+
+Procedure Binding
+
+    > (define proc1
+        (lambda (x y)
+            (proc2 y x)))
+    
+    > (proc1 'a 'b)         // since proc2 has not been defined yet, we get an error
+    Exception: variable proc2 is not bound
+    
+    > (define proc2 cons)
+    > (proc1 'a 'b)         // now that proc2 is defined, proc1 can call it and run
+    (b . a)
+
+Cond
+- (if test consequent alternative)
+- Have =, >=, not, or, etc.
+- syntactic form, not a procedure due to need to not evaluate all arguments 
+
+    > (define abs
+        (lambda (n)
+            (if (< n 0)
+                (- 0 n)
+                n)))
+    
+    > (abs 42)
+    42
+
+    > (abs -42)
+    42
+
+--------------------------------------------
+
+    (define single
+        (lambda (n)
+            (cond 
+            [(<n 0) -1]
+            [(> n 0) +1]
+            [else 0]))
+
+--------------------------------------------
+
+    > (or)
+    #f 
+
+    > (or #t (/ 1 0))       // this is true because of left to right evaluation 
+    #t 
+
+    > (or (/ 1 0) #t)
+    Exception in /: undefined for 0
+
+
+    // most things evaluate to true. EX:
+
+    > (and)
+    #t
+
+    > (if '() 'true 'false)
+    true
+
+    > (if 0 'true 'false)
+    true
+
+    > (if #f 'true 'false)
+    false
+
+    > (or #f 'a #f)
+    a 
+
+Short Circuit
+
+    > (define reciprocal
+        (lambda (n)
+            (and (not (= n 0))      // check to not divide by 0
+            (/ 1 n))))
+
+Predicates
+- the procedures =, <, >, <=, etc 
+
+    > (null? '())
+    #t                  // thus, null is an empty list
+
+    > (null? 'abc)
+    #f
+
+Lisp CDR
+
+    > (cdr '())
+    Exception in cdr: () is not a pair      // so you can not use cdr on empty list
+                                            // you can define a function that will apply to an empty list though (similar to lisp-CDR)
+
+Equivalence
+ 
+    > (eqv? 'a 'a)
+    #t                                      // checks for equivalence
+
+    > (eqv? (cons 'a 'b) (cons 'a 'b))
+    #f                                      // this is false due to them being 2 different lists
+                                            // though they are identical, they are not the same 
+
 
