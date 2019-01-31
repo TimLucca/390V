@@ -1,0 +1,94 @@
+Scheme
+
+- created in the 70s in MIT AI Lab by Guy L Steele and Gerald Jay Sussman   
+- first dialect of lisp to choose lexical scope and the first to require implementations to perform tail-call optimization
+    lexical scope - means look up. EX:
+
+        f = 1
+        g(){
+            b = f++
+        }
+        f = 3
+        g()
+    
+    in scheme: b = 2
+    in lisp: b = 4
+    so, scheme uses a lexical scope whereas lisp uses a dynamic scope 
+
+    tail call optimization ex:
+
+        f() {
+            .
+            .
+            .
+            f()
+        }
+
+    instead of creating a new stack frame each time f() is called, the recursion is treated as an iteration
+    this saves both memory in the stack and time because new frames aren't needed to be created 
+
+- for numbers, scheme uses exact and inexact integers, rational, real, and complex numbers 
+- procedures (functions) are written as:
+        (procedure arg ...)
+- procedure applications may be nested; the innermost values are computed first 
+- We will be using Chez Scheme 
+    (racket is an implementation of scheme for GUI)
+
+
+Chez Scheme 
+    
+    > (1 2 3 4 5)
+    Exception: attempt to apply non-procedure 1
+    
+    > (quote (1 2 3 4 5))
+    (1 2 3 4 5)
+
+    > (+ 3 4)
+    7
+
+Lists
+- the names "car" (gives first element of list) and "cdr" (gives everything besides first element of list) are derived from operations supported by the first computer on which a lisp language was implemented, the IBM 704
+    Contents of the address part of the register (car)
+    Contents of the decrement part of the register (cdr)
+
+        > (car '(1 2 3))
+        1
+
+        > (cdr '(1 2 3))
+        (2 3)
+
+        > (car '())
+        Exception in car: () is not a pair
+
+        > (cdr '())
+        Exception in cdr: () is not a pair
+
+CONS 
+- constructs lists
+
+    > (cons 'a '())
+    (a)
+
+    > (cons 'a ' (b c))
+    (a b c)
+    // 'a ' is an atom and combined with the list (b c) and creates a new list (a b c)
+
+    > (cons 'a 'b)
+    (a . b)
+    // this is a pair, not a list. this is due to the fact that b was not a list to begin with
+
+    > (cons 'a '(b))
+    (a b)
+
+    > (cons 'a (cons 'b (cons 'c '())))
+    (a b c)
+
+    > (cons '(a b) '(c d))
+    ((a b) c d)
+
+
+----Do chapter 2 exercises----
+
+Binding values
+
+(let((var expr)...) body1 body2 ..)

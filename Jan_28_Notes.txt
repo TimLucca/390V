@@ -1,0 +1,31 @@
+Functions
+- a function is a mapping from set A to set B such that each element of A is mapped into a unique element of B
+- the set A (on which a function is defined) is called the domain of the function 
+- the set of all elements of B mapped to elements of A by f is called the range (codomain) of f, and is denoted f(A)
+
+Mapping 
+- if f is a function from A into B, then it is written: f : A -> B 
+- the equation f(a) = b means the value from applying function f to an element a in A is an element b in B 
+- a function f: A -> B is one-to-one iff distinct elements of A are mapped to distinct elements of b
+- so, f(a) = f(a') iff 
+
+One-to-one and Onto
+- a function f : A -> B is onto iff every element of b in B there is some element a in A such that f(a) = b
+- f : A -> B is one-to-one correspondence (bijection) iff f is one-to-one and onto
+
+Inverses
+- given f : A->B and g : B->C the composition of f and g written g (dot) f is a function from A into C such that -(g(dot)f)(a) = g(f(a))
+- an inverse exists for any one-to-one function 
+
+Invertible
+- if f : A -> B is one-to-one correspondence then there exists an inverse function 
+- functions that are one-to-one correspondences are also invertible 
+
+Identities
+- an element e of set A is a left identity of binary operation iff e (binary op) x = x for any x, a right identity iff x (binary op) e = x, and an identity iff both left and right identity 
+
+Groups
+- if (binary op) is an associative operation, then (binary op) and A are said to form a semigroup
+- a semigroup that also has an identity element is called a monoid
+- if every element of a monoid has an inverse then the monoid is called a group
+- if a monoid or group is also commutative, then it is said to be Abelian 
