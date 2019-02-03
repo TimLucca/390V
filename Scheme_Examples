@@ -1,0 +1,56 @@
+> (define factorial
+    (lambda x)
+        (if (< n 2)
+            1
+            (* n (factorial (- n 1)))))
+
+> (factorial 3)
+6
+
+
+> (define length-of-list
+    (lambda (lst)
+        (if (null? lst)
+            0
+            (+ 1 (length-of-list (cdr lst))))))
+
+> (define lst '(1 2 3 4))
+> (length-of-list lst)
+4
+
+> (define maniplist
+    (lambda (lst base f)
+        (if (null? lst)
+            base
+            (f (car lst) (maniplist (cdr lst) base f)))))
+
+> (maniplist lst 0 +)
+10
+> (maniplist lst 1 *)
+24
+> (maniplist lst '() (lambda (elem result) (cons elem result)))  // returns original list
+(1 2 3 4)
+> (maniplist lst 0 (lambda (elem result) (+ 1 result)))          // returns length of list
+4
+
+> (define set-grid 
+    (lambda (grid r c v)
+        (if (= r 0)
+            (cons (set-row (car grid) c v) (cdr grid))
+            (cons (car grid) (set-grid (cdr grid) (- r 1) c v)))))
+
+> (define set-row
+    (lambda (row c v)
+        (if (= c 0)
+            (cons (car row) (set-row (cdr row) (- c 1) v)))))
+
+> (define grid '((0 0 0)
+                (0 0 0)
+                (0 0 0)))
+
+> (set-grid grid 1 1 3)
+((0 0 0 )(0 3 0)(0 0 0))
+
+> (set-grid (set-grid grid 1 2 1) 1 0 1)
+((0 0 0)(1 0 1)(0 0 0))
+
