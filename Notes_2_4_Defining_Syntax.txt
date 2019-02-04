@@ -1,0 +1,29 @@
+Define Syntax
+
+> (define-syntax let
+    (syntax-rules()
+        [(_ ((x e) ...) b1 b2 ...)
+            ((lambda (x ...) b1 b2 ...) e ...)]))
+
+- '_' is used as 'let'
+- things within the brackets above are treated as a condition
+- so, let is not a part of the default grammar; it is a defined-syntax extension
+
+- one or more rules ([(_ ((x e) ...) b1 b2 ...) == let 'pairs of things' and 'statements of things')
+    pattern/template pairs
+- only one rule appears in our definition of let, more can be made though
+- the pattern part of a rule simplifies the form that the input must take
+- the pattern should always be a structured expression whose first element is an underscore
+- other characters besides underscore and elipses are variables
+- pat ... in the pattern allows for zero or more expressions
+- expr ... in the template produces zero or more expressions
+
+Visibility
+
+> (let ([sum (lambda (ls)
+        (if (null? ls)
+            0
+            (+ (car ls) (sum (cdr ls)))))])
+    (sum '(1 2 3 4 5)))
+Exception: variable sum is not bound
+
