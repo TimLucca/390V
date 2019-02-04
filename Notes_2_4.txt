@@ -48,4 +48,44 @@ set! (set-bang)
                     (set! next (+ next 1))
                     v)))))
 
-                    
+> (define count1 (make-counter))
+> (count1)
+0
+> (count1)
+1
+> (count1)
+2
+
+
+Stacks
+- stacks have state 
+
+> (define make-stack
+    (lambda()
+        (let ([ls '()])
+            (lambda (msg . args)
+                (cond
+                    [(eqv? msg 'empty?) (null? ls)]
+                    [(eqv? msg 'push!) (set! ls (cons (car args) ls))]
+                    [(eqv? msg 'top) (car ls)]
+                    [(eqv? msg 'pop!) (set! ls (cdr ls))]
+                    [else "oops"])))))
+
+
+Bang!
+- destructive operations have '!'
+- should keep all state internal (let-bind)
+
+
+Map
+
+> (map abs '(1 -2 3 -4 5 -6))
+(1 2 3 4 5 6)
+
+> (map (lambda (x) (* x x))
+    '(1 -3 -5 7))
+(1 9 25 49)
+
+> (map cons '(a b c) '(1 2 3))
+((a . 1) (b . 2) (c . 3))
+
