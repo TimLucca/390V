@@ -27,3 +27,79 @@ Visibility
     (sum '(1 2 3 4 5)))
 Exception: variable sum is not bound
 
+- instead...
+
+> (letrec) ([sum (lambda (ls)
+        (if (null? ls)
+            0
+            (+ (car ls) (sum (cdr ls)))))])
+    (sum '(1 2 3 4 5)))
+15
+
+- ex:   (let ([a 1] [b a])) does not work because order of operations is not guarenteed here; a may not be bound when be is looking for it 
+        (let* ([a 1] [b a])) will work due to left to right evaluation 
+
+
+Named let
+- for tail recursive calls
+    (let name ((var expr) ..)
+        body1 body2 ...)
+
+
+- Not Tail Recursive
+- the last thing that happens is the multiplication, not the call to 'fact'
+> (define factorial
+    (lambda (n)
+        (let fact ([i n])
+            (if (= i 0)
+                1
+                (* i (fact (- i 1)))))))
+
+- Is Tail Recursive
+- the last thing that happens is the call 'fact' 
+- uses accumulator to keep track of iteration
+> (define factorial
+    (lambda (n)
+        (let fact ([i n] [a 1])
+            (if (= i 0)
+                a
+                (fact (0 i 1) (* a i))))))
+
+
+- Half-Way Tail Recursive
+- the final line is tail recursive, however the previous condition is not (the final operation is cons)
+> (define factor
+    (lambda (n)
+        (let f ([n n] [i 2])
+            (cond
+                [(>= i n) (list n)]
+                [(integer? (/ n i))
+                    (cons i (f (/ n i) i))]
+                [else (f n (+ i 1))]))))
+
+- Not Tail Recursive Fibonacci 
+> (define fibonacci
+    (lamnda (n)
+        (let fib ([i n])
+            (cond
+                [(= i 0) 0]
+                [(= i 1) 1])
+                )))        /////// needs finish
+
+- Tail Recursive Fibonacci
+- uses 2 accumulators, a1 and a2 
+> (define fibonacci
+    (lambda (n)
+        (if (= n 0)
+            0
+            (let fib ([i n] [a1 1] [a2 0])
+                (if (= i 1)
+                    a1
+                    (fib (- i 1) (+ a1 a2) a1))))))
+
+> (time (fibonacci 45))
+    no collections
+    0.000000000s elapsed cpu time
+    0.000000000s elapsed real time
+    0 bytes allocated
+1134903170

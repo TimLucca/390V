@@ -1,3 +1,7 @@
+TRACK SPEED OF CALCULATION:
+> (time (function))
+
+
 Repitition via Recursion
  
  > (define length
