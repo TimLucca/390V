@@ -1,1 +1,3 @@
-# 390V
+# 390V - Functional Programming
+
+Current language: Chez Scheme
