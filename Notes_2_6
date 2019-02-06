@@ -1,0 +1,64 @@
+For homework:
+    "extra credit" for figuring out what to do with different sized lists; ex: (1 1) + (1) = ?
+                                                                                (1 1) + (1 [base]) = (1 1) + (1 0)
+
+
+Continuations
+- during the evaluation of a scheme expression, implementation must be keep track of:
+    1) what to evaluate
+    2) what to do with the value (this is called the CONTINUATION OF A COMPUTATION)
+- at any point during the evaluation of any expression, there is a continuation ready to complete the computation 
+
+> (if (null? x) (quote ()) (cdr x))
+
+- values to be computed:
+    1) value of (if (null? x) (quote ()) (cdr x))
+    2) value of (null? x)
+    3) value of null?
+    4) value of x
+    5) value of cdr 
+    6) value of x
+
+- currying: decomposing a function into multiple single parameters
+
+call-with-current-continuation
+- call/cc must be passed a procedure p of one argument
+- call/cc constructs a concrete representation of the current contiuation and passes it to p 
+- the continuation itself is represented by a procedure k 
+
+> (call/cc
+    (lambda (k)
+        (* 5 4)))
+20
+
+- continuation is capture and bound to k, but k is never used, so the value returned is just 5*4
+
+> (call/cc
+    (lambda (k)
+        (* 5 (k 4))))
+4
+
+- continuation is invoked before the multiplication, so the value is the value passed to the continuation, 4
+
+> (+ 2
+    (call/cc
+        (lambda (k)
+            (* 5 (k 4)))))
+6
+
+
+> (define product
+    (lambda (ls)
+        (call/cc
+            (lambda (break)
+                (let f ([ls ls])
+                    (cond
+                        [(null? ls) 1]
+                        [(= (car ls) 0) (break 0)]
+                        [else (* (car ls) (f (cdr ls)))]))))))
+
+> (product '(1 2 3 4 5))
+120
+> (product '(7 3 8 0 1 9 5)) // once 0 is reached, the entire calculation ends and 0 is returned
+0
+
