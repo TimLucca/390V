@@ -4,14 +4,10 @@ ANSWER - vecadd
 
 (define vecadd
     (lambda (l1 l2)
-        (if (null? l1)
-            '()
-            (cons (+ (car l1) (car l2)) 
-                (if (list? (cdr l1))
-                    (vecadd (cdr l1) (cdr l2))
-                    (if(pair? (cdr l1))
-                        (vecadd (list (cdr l1)) (list (cdr l2)))
-                        (+ (cdr l1) (cdr l2))))))))
+      (cond
+        [(and (null? l1) (null? l2)) '()]
+        [(and (pair? l1) (pair? l2)) (cons (+ (car l1) (car l2)) (vecfn (cdr l1) (cdr l2)))]
+        [else (+ l1 l2)])))
 
 ======================================================================================
 ANSWER - vecfn 
@@ -19,14 +15,10 @@ ANSWER - vecfn
 
 (define vecfn
     (lambda (f l1 l2)
-      (if (null? l1)
-          '()
-          (cons (f (car l1) (car l2))
-            (if (list? (cdr l1))
-                (vecfn f (cdr l1) (cdr l2))
-                (if (pair? (cdr l1))
-                    (vecfn f (list (cdr l1)) (list (cdr l2)))
-                    (f (cdr l1) (cdr l2))))))))
+      (cond
+        [(and (null? l1) (null? l2)) '()]
+        [(and (pair? l1) (pair? l2)) (cons (f (car l1) (car l2)) (vecfn f (cdr l1) (cdr l2)))]
+        [else (f l1 l2)])))
 
 ======================================================================================
 ANSWER - vecfun - relies on vecfn

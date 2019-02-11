@@ -70,4 +70,13 @@ ANSWER - vecfun
 (define-syntax vecfun
     ((_ f x y)
         (vecfn f x y)))
+===========================
+clean
+==========================
+(define vecfn
+    (lambda (f l1 l2)
+      (cond
+        [(and (null? l1) (null? l2)) '()]
+        [(and (pair? l1) (pair? l2)) (cons (f (car l1) (car l2)) (vecfn f (cdr l1) (cdr l2)))]
+        [else (f l1 l2)])))
 
