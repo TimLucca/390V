@@ -1,0 +1,70 @@
+Overview
+- runs on JVM
+    - thus, has access to java libraries
+- Scala.js is a Scala compiler that can compile to JavaScript
+    - so, can run on front end
+    - can also write backend using node.js 
+    - LLVM compiler can compile scala to object code for platforms AKA ".exe"
+
+- No primitives - all types are objects, including functions
+- Type inference, you don't need to specify a type
+    - ex: val a = 3 
+        doesn't need to specify that a is an int
+- Traits and mix-ins
+- Closures (a function in its referencing enviornment)
+    - gives ability to do encapsulation and hide variable
+    - also allows multiple lambdas which can allow multiple states
+- Concurrency support inspired by Erlang
+- Currying
+    - named after Haskell Curry
+    - takes multiparameter functions and turns it to multiple single parameter functions
+- Immutability
+    - can't always be immutable, I/O itself is mutable so it can't always be avoided
+        - queues in Scala are also mutable by definition, however they are thread safe
+    - mostly uses 'node splitting' 
+        - ex in a list where the 3rd value is changed:
+            - the old list will still exist
+            - the new list will still start at the head of the old list 
+                - the new list gets a pointer to a new 3rd value that then diverts from the original list 
+- Lazy evaluation
+- Pattern matching
+- algebraic data types
+- covariance and contravariance
+- anonymous types 
+- operator overloading
+- optional parameters
+- named parameters
+- raw strings
+- class names are TitleCased 
+- methods are camelCased
+- files are ObjectName.scala
+- object have "def main(args: Array[String])"
+- semicolons at end of line are optional
+- lines are automatically joined if they are unfinished
+    - ex: end with unclosed parenthesis
+- any method can be used as an infix operator
+    > "%d apples".format(num)
+    > "%d apples" format(num) 
+    both work the same
+    ex:
+
+    > 1 + 1
+    res: Int = 2
+    > 1.+(1)
+    res: Int = 2
+
+    > 1F.+(1)
+    res: Float = 2.0
+    > 1F + 1
+    res: Float = 2.0
+
+
+- arithmetic operators are treated like other methods (like + and <<)
+
+
+    > 1.<TAB> 
+    shows all commands you can call on object '1'
+
+    > 1.toBinaryString
+    res0: String = 1
+
