@@ -42,6 +42,7 @@ Overview
 - semicolons at end of line are optional
 - lines are automatically joined if they are unfinished
     - ex: end with unclosed parenthesis
+- arithmetic operators are treated like other methods (like + and <<)
 - any method can be used as an infix operator
     > "%d apples".format(num)
     > "%d apples" format(num) 
@@ -59,12 +60,52 @@ Overview
     res: Float = 2.0
 
 
-- arithmetic operators are treated like other methods (like + and <<)
-
-
     > 1.<TAB> 
     shows all commands you can call on object '1'
 
     > 1.toBinaryString
     res0: String = 1
+
+
+- function names are allowed to consist of sequences of arbitrary symbols
+
+----------------------------------------------------------------------------
+Apply and Update
+----------------------------------------------------------------------------
+- foo() is short for foo.apply()
+- foo() = 42 is short for foo.update(42)
+- foo(42) is short for foo.apply(42)
+- foo(4) = 2 is short for foo.update(4, 2)
+
+
+- the use of curly braces instead of parentheses is allowed in method calls
+- allows pure library implementations of new control structures
+    - a = foo(4)
+    - a = foo{4} 
+
+    > 1.+{2}
+    res: Int = 8
+
+
+Imports
+- import scala.xml._
+    - imports all things from scala.xml
+- import scala.collection.immutable.{treemap, something else}
+    - only imports specified things
+
+Interesting Objects
+- unit -> kind of like void
+    - like an empty return
+- null
+- nothing -> a subclass of all other classes
+    - below all types
+- all types inherit from a top-level class 'Any'
+    - above all types
+    - childeren are AnyVal and AnyRef
+- this almost looks identical to Haskell's type system
+
+- unlike C or Java, but similar to Lisp or Scheme, Scala makes no distinction between statements and expressions
+- all statements are in fact expressions that evaluate to some value
+    ex:
+    > val hexDigit = if (x >= 10) x + 'A' - 10 else x + '0'
 
