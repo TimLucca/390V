@@ -70,9 +70,10 @@ ANSWER - vecfun
 (define-syntax vecfun
     ((_ f x y)
         (vecfn f x y)))
-===========================
+
+======================================================================================
 clean
-==========================
+======================================================================================
 (define vecfn
     (lambda (f l1 l2)
       (cond
@@ -82,17 +83,39 @@ clean
 
 
 
-========================================================================================
+======================================================================================
 Different Lengths
-========================================================================================
+======================================================================================
 
 (define vecfn
     (lambda (f l1 l2 base)
         (cond
-        [(and (null? l1) (null? l2)) '()]
-        [(and (pair? l1) (pair? l2)) (cons (f (car l1) (car l2)) (vecfn f (cdr l1) (cdr l2) base))]
-        [(and (pair? l1) (not (pair? l2))) (cons (f (car l1) base) (vecfn f (cdr l1) '() base))]
-        [(and (not (pair? l1)) (pair? l2)) (cons (f base (car l2)) (vecfn f '() (cdr l2) base))]
-        [else (f l1 l2)])))
+            [(and (null? l1) (null? l2)) '()]
+            [(and (pair? l1) (pair? l2)) (cons (f (car l1) (car l2)) (vecfn f (cdr l1) (cdr l2) base))]
+            [(and (pair? l1) (not (pair? l2))) (cons (f (car l1) base) (vecfn f (cdr l1) '() base))]
+            [(and (not (pair? l1)) (pair? l2)) (cons (f base (car l2)) (vecfn f '() (cdr l2) base))]
+            [else (f l1 l2)])))
 
 
+======================================================================================
+Interesting Observations
+======================================================================================
+
+(define-syntax vecfun
+    (syntax-rules ()
+        ((_ l1 l2)
+            (cond
+                [(and (null? l1) (null? l2)) '()]))))
+
+> (vecfun '() '())
+()
+
+(define-syntax vecfun
+    (syntax-rules ()
+        ((_ l1 l2)
+            (cond
+                [(and (null? l1) (null? l2)) '()]
+                [(and (pair? l1) (pair? l2)) (cons (+ (car l1) (car l2)) (vecfun (cdr l1) (cdr l2)))]))))
+
+> (vecfun '() '())
+*cli crashes*
