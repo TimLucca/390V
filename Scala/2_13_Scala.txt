@@ -5,7 +5,10 @@ Tail Recursion
 Pattern Matching
 - similar to switch statement
 
+
+- '=>' signifies a function
 - '::' is the list seperator
+    - evaluates right to left instead of right to left
     -so 'case pivot :: tail' pivot becomes the 'car' and tail become the 'cdr'
     - tail.partition(_ < pivot) takes in a function
         - '_' in this case works as an anonymous variable (is like a lambda with a single parameter)
@@ -36,3 +39,46 @@ List[Any] = List(List(1, 2, 3), 4, 5, 6)
 List[Int] = List(1, 2, 3, 4, 5, 6)
 
 
+> 42 ::: List(4, 5, 6)
+error: type mismatch;
+
+> 42 :: List(4, 5, 6)
+List[Int] = [List](42, 4, 5, 6)
+
+
+Traits
+- replacement for Java's interfaces
+- traits are similar to mixin classes; they have nearly all the power of regular abstract class, but lack class parameters bc traits are mixed in with class
+
+
+Type Enrichment
+
+
+    object MyExtensions {
+        implicit class IntPredicates(i: Int) {
+            def isEven = i % 2 == 0
+            def isOdd = !isEven 
+        }
+    }
+
+    import MyExtensions._
+
+
+Scala vs Scalac
+- for example, Java does not have support for friends
+- the following code works for Scalac but not Scala
+    // classes are not static
+    class Person(val name: String, private val superheroName: String)
+    
+    // objects are static
+    // mains have to be in statics
+    object Person {
+        def showMeInnerSecret(x: Person) = x.superheroName
+        def main(args: Array[String]) {
+            val person = new person("Clark Kent", "Superman")
+            println(showMeInnerSecret(person))
+        }
+    }
+
+
+    
