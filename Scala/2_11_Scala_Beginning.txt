@@ -4,7 +4,7 @@ Overview
 - Scala.js is a Scala compiler that can compile to JavaScript
     - so, can run on front end
     - can also write backend using node.js 
-    - LLVM compiler can compile scala to object code for platforms AKA ".exe"
+- LLVM compiler can compile scala to object code for platforms AKA ".exe"
 
 - No primitives - all types are objects, including functions
 - Type inference, you don't need to specify a type
