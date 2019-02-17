@@ -16,7 +16,7 @@ val qsort: List[Int] => List[Int] = {
     case pivot :: tail =>
         val (smaller, rest) = tail.partition(_ < pivot)
         qsort(smaller) ::: pivot :: qsort(rest)
-    }
+}
 
 
 object myExtensions {
