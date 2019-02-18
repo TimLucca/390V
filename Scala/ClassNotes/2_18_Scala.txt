@@ -1,0 +1,242 @@
+Concurrency
+- Scala's standard library includes support for the actor model in addition to the standard java concurrency APIs
+    - the actor model originates from erlong
+    - scala gets all java concurrency functions because it is built ontop of jvm
+- supports asynchronous programming with:
+    -futures and promises
+    -software transational memory
+        -treats main memory as a database
+    -event stream
+- Apache Spark (and Kafka) allows cluster-computing in scala 
+
+Mutability
+-linked lists, arrays, sets, hash tables are available as mutable and immutable variants
+
+Symbols
+- a symbol literal 'x is shorthand for the expression scala.Symbol("x")
+- multi-line string with """
+
+Values and Variables
+- val is immutable
+- var is mutable
+- val ten : Int = 10
+- var eleven : Int = 11
+- val twelve = 12
+- var thirteen = 13
+
+Tuples
+- val (myVar1, myVar2) = Pair(40, "Foo")
+
+Scopes
+- fields: var or val
+- parameters: always val
+- locals: var or val
+- guidance: use val until you know you can't 
+
+Inheritance
+
+    class TwoDPoint(x: Int, y: Int) {
+        override def toString(): String = "(" + x + "," + y + ")"
+    }
+
+    class ThreeDPoint(val x: Int, val y: Int, val z: Int)
+    extends TwoDPoint(x, y) {
+        override def toString(): String = "(" + x + "," + y + "," + z + ")"
+    }
+
+
+    object Point {
+        def main(args: Array[String]) {
+            val twodpt = new TwoDPoint(1, 2)
+        }
+    }
+
+
+Optional 
+- Option[A] is a container for an optional value of type A
+- If the value of type A is present, the Option[A] is an instance of Some[A] containing the present value of type A
+- If the value is abset, Option[A] is the object None
+
+- Some and None are type childeren of Option 
+
+
+
+    scala> def toInt(in: String): Option[Int] = {
+     | try{
+     | Some(Integer.parseInt(in.trim))
+     | } catch {
+     | case e: NumberFormatException => None
+     | }
+     | }
+    toInt: (in: String)Option[Int]
+
+    scala> val bag = List("1", "2", "foo", "3", "bar")
+    bag: List[String] = List(1, 2, foo, 3, bar)
+
+    scala> val sum = bag.flatMap(toInt).sum
+    sum: Int = 6
+
+
+Objects
+- objects are singletons
+- a replacement for static in java
+- main must be in an object
+
+Companion Objects
+- an object that has the same name as a class is called a companion object of the class, and it is often used to contain factory methods for the class that it complements
+- can see private value and variables of the corresponding class 
+
+    class Email(val username: String, val domainName: String)
+    
+    object Email {
+        def fromString(emailString: String): Option[Email] = {
+            emailString.split('@') match {
+                case Array(a, b) => Some(new Email(a, b))   // an @ found, splits string to a, b
+                case _ => None                              //Any other case
+            }
+        }
+    }
+
+    scalaCenterEmail match {
+        case Some(email) => println(
+            s"""Registered an email
+                Username: ${email.username}
+                Domain name: ${email.domainName}
+            """)
+        case None => println("error: could not parse email")
+    }
+
+
+
+Blocks
+
+    > println({
+        val x = 1 + 1
+        x + 1
+    })
+
+    res: 3
+
+- blocks return the last value 
+- => can be used like lambda
+
+    > ((x: Int) => x + 1)(2)
+    res: Int = 3
+
+    > val addOne = (x: Int) => x + 1        // allows us to capture the lambda as a val 
+    addOne: Int => Int = <function1>
+
+    > addOne(2)
+    res: Int = 3
+
+
+Methods
+- use "def", have a return type, and a block 
+- can have multiple parameter lists
+
+    > def addThenMultiply(x: Int, y: Int)(multiplier: Int): Int = (x + y) * multiplier
+
+    > println(addThenMultiply(1, 2)(3))
+    res: 9
+
+
+    > def name: String = System.getProperty("user.name")
+
+    > println("Hello, " + name + "!")
+    Hello, Tim!
+
+
+Case class
+- immutable
+- compared by value 
+- don't need to specify 'new'
+
+    > case class Point(x: Int, y: Int)
+    
+    > val point = Point(1, 2)
+
+    > val anotherPoint = Point(1, 2)
+
+    > point == anotherPoint
+    res: true
+
+
+Object Factory
+- creates a new id with each creation
+
+
+Type Hierarchy
+- Any is supertype of all types
+- it defines universal methods such as equals, hashCode, and toString
+- any has 2 direct subclasses:
+    - AnyVal and AnyRef
+
+- AnyVal represents value types
+- there are 9 value types and are non-nullable:
+    - Double
+    - Float
+    - Long
+    - Int
+    - Short
+    - Byte
+    - Char
+    - Unit 
+    - Boolean
+
+- unit is a value type which carries no meaningful information, essentially void
+- only one instance of Unit and is the literal ()
+
+- AnyRef represents reference types
+- all non-value types are defined as reference types
+- all user-defined types in Scala is a subtype of AnyRef 
+
+    
+    val list: List[Any] = List(
+        "a string",
+        732,
+        'c'
+        true,
+        () => "an anonymous function that returns a string"
+    )
+
+    > list.foreach(element => println(element))
+    a string 
+    732
+    c 
+    true
+    //some value to the lambda ()
+
+
+Nothing 
+- Nothing is a subtype of all types, called the bottom type 
+- a common use is to signal non-termination such as a thrown exception, program exit, or an infinite loop 
+- so the type of an expression that doesn't eval to anything or doesnt return normally
+
+Null
+- Null is subtype of all reference types 
+- it has a single value identified by the keyword literal null 
+- Null is provided mostly for interoperability with toher JVM languages, try to avoid it
+
+Trait as Interface 
+- similar to interface 
+
+
+    trait Iterator[A] {
+        def hasNext: Boolean 
+        def next(): A
+    }
+
+    trait Pet {
+        val name: String 
+    }
+
+
+    >class Cat(val name: String) extends Pet 
+    
+    >class Dog(val name: String) extends Pet 
+
+    > val dog = new Dog("Harry")
+    > val cat = new Cat("Toby")
+    > List(cat, dog).foreach(pet => println(pet.name))
+    Toby
+    Harry 
