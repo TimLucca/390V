@@ -240,3 +240,5 @@ Trait as Interface
     > List(cat, dog).foreach(pet => println(pet.name))
     Toby
     Harry 
+
+
