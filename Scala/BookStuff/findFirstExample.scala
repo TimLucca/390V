@@ -5,6 +5,7 @@ def findFirst(ss: Array[String], key: String): Int = {
         if (n >= ss.length) -1    // return -1 if not in the string
         else if (ss(n) == key) n // return the index the key was found at
         else loop(n+1)          //recurse
+    loop(0)
 }
 
 // POLYMORPHIC FUNCTION
@@ -14,6 +15,7 @@ def findFirst[A](arr: Array[A], p: A => Boolean): Int = {
     def loop(n: Int): Int =
         if (n >= arr.length) -1
         else if (p(arr(n))) n 
-        else loopI(n+1)
+        else loop(n+1)
+    loop(0)
 }
 

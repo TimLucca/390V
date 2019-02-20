@@ -1,0 +1,147 @@
+Homework 2
+'/' goes to index.html
+invalid goes to 404 error
+can use things ie.
+    Java.net.url
+use ScalaTest 'http://www.scalatest.org'
+use ScalaMock 'http://www.scalatest.org/user_guide/testing_with_mock_objects'
+-- check 'echo server java/python/etc'
+
+- `telnet localhost 9999` will get you into the echo 
+
+
+Tuples
+
+scala> val ingredient = ("sugar", 25)
+ingredient: (String, Int) = (Sugar,25)
+
+scala> ingredient._1
+res: String = Sugar 
+
+scala> ingredient._2
+res: Int = 25
+
+
+Tuple Pattern Matching 
+ scala> val numPairs = List((2,5),(3,-7),(20,56))
+
+ scala> for ((a, b) <- numPairs) {
+     println(a*b)
+ }
+
+ ---
+
+
+Traits vs Abstract Classes
+- traits can implement methods
+- mixins
+
+scala>  abstract class A{
+            val message: String
+        }   
+
+scala>  class B extends A {
+            val message = "Instance of class B"
+        }
+
+scala> trait C extends A {
+            def loudMessage = message.....
+        }
+
+
+> class D extends B with C 
+> val d = new D 
+
+- d.message is inherited 
+- d.loudMessage is a mixin 
+
+
+Higher-Order Functions
+
+scala> val salaries = Seq(20000, 70000, 40000)
+scala> val doubleSalary = (x: Int) => x*2
+scala> val newSalaries = salaries.map(doubleSalary)
+newSalaries: Seq[Int] = List(40000, 140000, 80000)
+
+// so 'map' applies the function 'doubleSalary' to each of the functions 
+
+or you could:
+
+scala> val newSalaries = salaries.map(x => x * 2)
+
+OR 
+
+scala> val newSalaries = salaries.map(_ * 2)
+
+
+
+
+case class WeeklyWeatherForecast(temperatures: Seq[Double]) {
+    private def convertCtoF(temp: Double) = temp * 1.8 + 32
+    def forecastInFahrenheit: Seq[Double] = temperatures.map(convertCtoF)
+}
+
+// in here, 'convertCtoF' is moreso a method than a function, however scala automatically converts it to be used as a function
+// so the method:
+private def convertCtoF(temp: Double) = temp * 1.8 + 32
+// becomes a function a function:
+val convertCtoF = (temp: Double) => temp * 1.8 + 32
+
+
+
+Functions as a Parameters 
+
+private def promotion(salaries: List[Double], promotionFunction: Double => Double):
+    List[Double] = salaries.map(promotionFunction)
+
+
+Functions as a Return Type
+
+def urlBuilder(ssl: Boolean, domainName: String): (String, String) => String = {....}
+
+
+
+Multiple Parameter Lists
+
+scala> val numbers = List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+scala> val res = numbers.foldLeft(0)((m, n) => m + n)
+res: Int = 55
+// OR 
+scala> numbers.foldLeft(0)(_ + _)
+res: Int = 55
+
+// Partials
+scala> val numberFunc = numbers.foldLeft(List[Int]())_
+// the function is initially not specified and left as a blank '_'
+scala> numberFunc((xs, x) => xs: + x*x)
+res: List[Int] = List(1, 4, 9, 16, 25, 36, 49, 64, 81, 100)
+
+
+Partial Application
+- when a method is called with a fewer number of parameter lists, then this will yield a function taking the missing parameter lists as its arguments
+    - currying
+- formally known as a partial application 
+- ex: foldLeft
+def foldLeft[TYPE_B](z: TYPE_B)(operation: (TYPE_B, TYPE_A) => TYPE_B): TYPE_B
+
+
+
+Partial 
+
+scala> def partial[A,B,C](a: A, f: (A,B) => C): B => C = (b: B) => f(a, b)
+
+scala> def add(a:Int, b:Int) = {a + b}
+
+scala> def halfway = partial(1, add)
+
+scala> halfway(2)
+res: Int = 3
+
+
+Curry
+- AKA functions with multiple parameters can be reduced to multiple functions with a single parameter
+
+scala> def curry[A,B,C](f: (A, B) => C): A=> (B => C) = a => b => f(a, b)
+scala> curry(add)(1)(2)
+res: Int = 3
+
