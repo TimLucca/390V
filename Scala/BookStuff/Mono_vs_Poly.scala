@@ -19,3 +19,12 @@ def findFirst[A](arr: Array[A], p: A => Boolean): Int = {
     loop(0)
 }
 
+def isSorted[A](arr: Array[A], greater: (A, A) => Boolean): Boolean = {
+    @annotation.tailrec
+    def go(n: Int): Boolean =
+        if (n >= arr.length-1) true
+        else if(greater(arr(n), arr(n+1))) false
+        else go(n+1)
+    go(0)
+}
+
