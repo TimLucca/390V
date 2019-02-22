@@ -145,3 +145,11 @@ scala> def curry[A,B,C](f: (A, B) => C): A=> (B => C) = a => b => f(a, b)
 scala> curry(add)(1)(2)
 res: Int = 3
 
+
+Compose
+- ex: to implement a cos function based on sin 
+    - cos = sin(pi/2 - x)
+    - so:
+scala> val f = (x: Double) => math.Pi / 2 - x 
+scala> val cos = f andThen math.sin 
+// the 'andThen' keyword composes function aka f(g(x))
