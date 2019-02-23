@@ -24,7 +24,6 @@ object MyModule {
         msg.format(name, x, f(x))
     }
 
-    // Unit is similar to a 'void' return type
     def main(args: Array[String]): Unit = 
         println(formatRes("absolute value", -20, abs))
         println(formatRes("factorial", 6, factorial))
