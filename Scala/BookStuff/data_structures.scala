@@ -54,9 +54,48 @@ object List {
     def length[A](as: List[A]): Int = 
         foldRight(as, 0)((_, y) => 1 + y)
 
+    @annotation.tailrec
     def foldLeft[A,B](a: List[A], base: B)(f: (B, A) => B): B = a match {
         case Nil => base
         case Cons(h, t) => foldLeft(t, f(h,b)(f)
     }
+
+    def concat[A](a: List[List[A]]): List[A] =
+        foldRight(a, Nil:List[A])(append)
+
+    def append2[A](a: List[A], b: List[A]): List[A] = 
+        foldRgiht(a, b)(Cons(_,_))
+
+    def incAll(a: List[Int]): List[Int] =
+        foldRight(a, Nil: List[Int])((h,t) => Cons(h+1,t))
+
+    def doubToStr(a: List[Double]): List[String] =
+        foldRgiht(a, Nil: List[String])((h,t) => Cons(h.toString,t))
+
+    def map[A,B](a: List[A])(f: A => B): List[B] = 
+        foldRight(a, Nil: List[B])((h,t) => Cons(f(h),t))
+
+    def filter[A](a: List[A])(f: A => Boolean): List[A] =
+        foldRight(a, Nil: List[A])((h,t) => if f(h) Cons(h,t) else t)
+
+    def flatMap[A,B](a: List[A])(f: A => List[B]): List[B] =
+        concat(map(l)(f))
+
+    def flatMapviaFilter[A,B](a: List[A])(f: A => Boolean): List[B] =
+        flatMap(a)((h => if (f(h)) List(h) else Nil)
+
+    def vecAdd[A](a: List[A], b: List[A]): List[A] = (a,b) match {
+        case (Nil,_) => Nil
+        case (_,Nil) => Nil
+        case (Cons(h1,t1),Cons(h2,t2)) => Cons(h1+h2, vecAdd(t1,t2))
+    }
+
+    def zipWith[A,B,C](a: List[A], b: List[B])(f: (A,B) => C): List[C] = (a,b) match {
+        case (Nil,_) => Nil 
+        case (_,Nil) => Nil 
+        case (Cons(h1,t1),Cons(h2,t2)) => Cons(f(h1,h2), zipWith(t1,t2)(f))
+    }
+
+    
 }
 
