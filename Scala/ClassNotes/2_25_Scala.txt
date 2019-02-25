@@ -1,0 +1,164 @@
+Scala Collections
+- a small vocabulary of 20-50 methods is enough to solve most sollection problems in a couple of operations
+- no need to wrap head around complicated looping structures or recursions
+- persistent collections and side-effect-free operations mean that you need not worry about accidentally corrupting existing collections with new data
+- interference between iterators and collection updates is eliminated
+
+Concise
+- can achieve several loops worth of operations in a much shorter amount
+- express functional operations with lightweight syntax and combine operations effortlessly
+    - makes the result feel like custom algebra
+
+Safe(er)
+- statically-typed and functional nature of Scala's collection means that the overwhelming majority of errors you might make are caught at compile time
+
+Fast
+- collection operations are tuned and optimized in the libraries
+- as a result, using collections is typically quite efficient
+- collections have been adapted to parallel execution
+- parallel collections support the same operations as sequential ones, no new operations need to be learned and no code needs to be rewritten
+- can turn a sequential collection to a parallel one by invoking the 'par' method 
+
+Universal
+- collections provide the same operations on any type where it makes sense to do so 
+
+Mutable and Immutable
+- mutable collections can be updated or extended
+    - can change, add, or remove
+    - called side effects
+        - SynchronizedMap can be used as a thread safe mutable object
+            - still not as fast as the immutable version
+- immutable collections cant change
+    - operations for change will return a new object without effecting the original object 
+    - pure function 
+- by default, Scala always picks immutable collections 
+- the collections all stem from Traversable
+
+    examples:
+
+    scala> Traversable(1,2,3)
+    res: Traversable[Int] = List(1, 2, 3)
+
+    scala> Iterable("x", "y", "z")
+    res: Iterable[String] = List["x","y","z"]
+
+    scala> SortedSet("hello", "world")
+    res: scala.collection.immutable.SortedSet[String] = TreeSet(hello, world)
+
+    scala> List(1, 2, 3) map (_ + 1)
+    res: List[Int] = List(2, 3, 4)
+
+    scala> Set(1,2,3) map(_ * 2)
+    res: scala.collection.immutable.Set[Int] = Set(2, 4, 6)
+
+
+Trait Traversable
+- def foreach[U](f: Elem => U)
+- ++ (append)
+- map, flatMap, collect 
+- Converstion 
+    - toArray, toList, toIterable, toSeq, ...
+- Size 
+    - isEmpty, nonEmpty, size, hasDefiniteSize
+- Retrieval
+    - head, headOption, last, lastOption, find 
+- Subcollections
+    - tail, init (all but last), slice, take, drop, takeWhile, dropWhile
+    - filter, withFilter, notFilter
+Subdivisions
+    - splitAt, span, partition, groupBy
+Condition
+    - forall, exists, count 
+Folds
+    - (base /: a)(op), a.foldLeft(base)(f)
+    - (a :\base)(op), a.foldRight(base)(f)
+    - xs reduceLeft op, xs reduceRight op 
+Specific Folds
+    - sum, product, min, max 
+
+Buffers
+- allow updating existing elements, element insertion, element removal, efficient additions of new elements at end of the buffer 
+- principal new methods supported by a buffer are += and ++= for element addition at the end, +=: and ++=: for the beginning
+
+Sets 
+- subset of Iterable
+- no duplicate elements 
+- Tests 
+    - contains and xs(x), subsetOf
+- additions and subtractions
+    - +, ++, -, --, empty 
+- operations 
+    - & and intersect, | and union, &~ and diff 
+
+SortedSet 
+-default: TreeSet using red-black trees (balanced trees)
+
+Synchronized mutable map 
+
+    import scala.collection.mutable.{Map, SynchronizedMap, HashMap}
+    object MapMaker {
+        def makeMap: Map[String, String] = {
+            new HashMap[String, String] with 
+                SynchronizedMap[String, String] {
+                    override def default(key: value)
+                    ...
+                }
+        }
+    }
+
+
+Streams
+- a stream is like a list except that its elements are computed lazily
+- streams can be infinitely long 
+- only elements requested will be computed 
+- streams have same performance characteristics as lists 
+
+ex of lazy: 
+        // the '#::' says only force when needed 
+    scala> def fibFrom(a: Int, b: Int): Stream[Int] = a #:: fibFrom(b, a + b)
+    fibFrom: (a: Int, b: Int)scala.collection.immutable.Stream[Int]
+
+        // .take(Int) is a method of the stream, specifically the #::
+    scala> fibFrom(1, 1).take(7).toList 
+    res: List[Int] = List(1, 1, 2, 3, 5, 8, 13)
+
+Vectors
+- address the inefficiency for random acces on lists 
+    - backed by a 'trie'
+- vectors allow accessing nay element of the list in 'almost' constant time 
+- it's a larger constant than for access to the head of a list or for reading an element of an array, bust still constant 
+
+Stacks and Queues 
+
+Ranges 
+    scala> (1 to 10).toList 
+    res: List[Int] = List(1,2,3,4,5,6,7,8,9,10)
+
+    scala> (1 to 10 by 2).toList 
+    res: List[Int] = List(1, 3, 5, 7, 9)
+
+Equality
+- divide collections into sets, maps, and sequences 
+- collections in different categories are always unequal 
+- collections are equal iff they have the same elements 
+    - sequences: the same elements in the same order 
+
+    scala> Set(1,2,3) == List(1,2,3)
+    res: Boolean = false 
+
+    scala> List(1,2,3) == Vector(1,2,3)
+    res: Boolean = true
+
+    scala> HashSet(1,2) == TreeSet(2,1)
+    res: Boolean = true 
+
+Views 
+- collections can use Views
+- transformers implemented lazily 
+
+    // range is not actually calculated at this point 
+    scala> val a_billion = (1 to 1000000000).view 
+
+    scala> (a_billion.view take 10).toList 
+    res: List[Int] = List(1,2,3,4,5,6,7,8,9,10)
+
