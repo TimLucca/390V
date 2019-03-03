@@ -3,18 +3,27 @@ import java.io._
 import scala.io._
 
 object EchoServer {
-    def main(args: Array[String]) {
-        val server = new ServerSocket(9999)
-        println("Socket created at port: " + server.getInetAddress().getHostAddress())
-        while (true) {
-            var s = server.accept()
-            println("Accepted")
-            var in = new BufferedSource(s.getInputStream()).getLines()
-            var out = new PrintStream(s.getOutputStream())
+    def read_and_write(in: BufferedReader, out: BufferedWriter): Unit = {
+        out.write(in.readLine())
+        out.flush()
+        in.close()
+        out.close()
+    }
 
-            out.println(in.next)
-            out.flush()
-            s.close()
+    def serve(server: ServerSocket): Unit = {
+        val s = server.accept()
+        val in = new BufferedReader(new InputStreamReader(s.getInputStream))
+        val out = new BufferedWriter(new OutputStreamWriter(s.getOutputStream))
+
+        read_and_write(in, out)
+
+        s.close()
+    }
+
+    def main(args: Array[String]): Unit = {
+        val server = new ServerSocket(9999)
+        while(true) {
+            serve(server)
         }
     }
 }

@@ -1,0 +1,64 @@
+in telnet
+    GET thing.html
+
+for the function read_and_write, we have 2 parameters, BufferedReader and BufferedWriter 
+    so, these need to be mocked for testing (mockito)
+
+    ex: 
+    i = mock[BufferedReader]
+        so, because Bufferedreader.readLine() returns a string, we need the mock to return a string 
+    
+    check that out.write() is called (should be printing what was read)
+    
+    can capture IO with ByteArrayInputStream and ByteArrayOutputStream
+    ex test code:
+        import java.net._
+        import java.io.{BufferedReader, BufferedWriter, ByteArrayInputStream, ByteArrayOutputStream}
+        import org.scalatest._
+        import org.mockito.Mockito._
+        import org.scalatest.mockito.MockitoSugar
+         
+    class TestEchoServer extends FlatSpec with Matchers with MockitoSugar {
+        // for mocking the server socket
+        "Bytes in" should "be bytes out" in {
+            val serversocket = mock[ServerSocket]
+            val socket = mock[Socket]
+            val bytearrayinputstream = new ByteArrayInputStream("This is a test".getBytes())
+            val bytearrayoutputstream = new ByteArrayOutputStream()
+            
+            when(serversocket.accept()).thenReturn(socket)
+            when(socket.getInputStream).thenReturn(bytearrayinputstream)
+            when(socket.getOutputStream).thenReturn(bytearrayoutputstream)
+        
+            EchoServer.serve(serversocket)
+        
+            bytearrayoutputstream.toString() should be ("This is a test")
+            verify(socket).close()
+            }
+        // for mocking the read/write 
+        "Read and write" should "echo" in {
+            val in = mock[BufferedReader]
+            val out = mock[BufferedWriter]
+
+            when(in.readLine()).thenReturn("This is a test")
+            EchoServer.read_and_write(in, out)
+
+            // basically assertions
+            verify(out).write("This is a test")
+            verify(out).flush()
+            verify(out).close()
+            verify(in).close()
+        }
+    }
+
+
+use a build.sbt for dependencies 
+ex:
+    name := "Name"
+    version := "Version"
+    libraryDependency += "org.scalatest" % "scalatest_2.12..."
+
+
+to test..... 'sbt test'
+IntelliJ has a 'coverage' next to the debug button 
+also Analyze->Inspect Code.. Analyze->Find Bugs..
