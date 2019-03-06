@@ -53,7 +53,10 @@ object EchoServer {
   def read_and_write(in: BufferedReader, out:BufferedWriter, printer: PrintWriter): Unit = {
     val input = in.readLine()
     val tokens = parseInput(input)
-    if(tokens(0)=="GET"){
+    if(tokens(0)!="GET"){
+      println("Invalid request command. Only implemented for GET")
+    }
+    else{
       val file = getFile(tokens(1))
       val statusCode = getStatus(file)
       val fileIn = new FileInputStream(file)
@@ -67,6 +70,7 @@ object EchoServer {
     out.flush()
     in.close()
     out.close()
+    printer.close()
   }
 
   def serve(server: ServerSocket): Unit = {
