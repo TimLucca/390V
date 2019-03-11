@@ -1,0 +1,107 @@
+Future
+- a future is a placeholder object for a value that may not yet exist
+- generally, the val of Future is supplied concurrently and can subsequently be used
+- composing concurrent tasks in this way tends to result in faster, asynchronous, non-blocking parallel code 
+    - USE Future for assignment 3
+- by default, futures and promises are non-blocking 
+    - make use of callbacks instead of typical blocking operations 
+- to simplify the use of callbacks both syntactically and conecptually, you can use functions such as flatmap, etc 
+
+    example:
+    
+    val inverseFuture: Future[Matrix] = Future {
+        fatMatrix.inverse()
+    }(executionContext)
+
+    // implicit execution context 
+    implicit val ec: ExecutionContext = ...
+    val inverseFuture : Future[Matrix] = Future {
+        fatMatrix.inverse()
+    }
+-
+Execution Contexts
+- an ExecutionContext is similar to an (Java) Executor: it is free to execute computations in a new thread, in a pooled thread, or in the current thread 
+- scala.concurrent package comes with an ExecutionContext implementation, a global static thread pool 
+
+- by default, ExecutionContext.global sets the maximun numbers of threads to run at a time 
+
+    Ex check processors available:
+
+    > import Runtime._
+    > Runtime.getRuntime.availableProcessors 
+    res: Int = 12
+
+Completion
+- if the computatino has not yet completed, we say the Future is not completed 
+
+- when a future is complete with a value, we say the future was successfully completed with that value 
+- when a future is completed with an exception thrown by the computation, we say taht the future was fialed with that exception 
+
+Apply
+- simplest way to create a future object is to invode the Future.apply method which starts an asynchronous computation and returns a future holding the result of that computation 
+- note that Ftuure[T] is a type which denotes future objects
+
+Blocking Futures
+- in many future implementations, once the client of the future becomes interested in its result, it has to block its own computation and wait until the future is completed 
+    - only then can it use the value of the future to continue its own computation 
+
+Callbacks 
+- although this is allowed by the scala future api, as we will show later, from a performance point of view a better way to do it is in a completely non-blocking way, by registering a callback on the future 
+- most general form of registering a callback is by using the onComplete method
+    - takes the type Try[T] => U
+- callback is applietd to the value of type Sucess[T] if the future completes successfully, or to a value of type Failure[T] otherwise 
+- Try[T] is Success[T] when it holds a value, a Failure[T] when holds an exception 
+- foreach is like onComplete but only called with successful completions 
+- neither can be chained 
+ 
+ Mersenne Primes 
+ 
+    import scala.concurrent.{Future, Await}
+    import scala.concurrent.duration._
+    import scala.concurrent.ExecutionContext.implicits.global 
+
+    object PrimeFactors {
+        def result(number: Long, list: List[Long] = List()): List[Long] = { 
+            // need to use a while loop with a long, because int is too small
+            var n = 2L
+            while (n <= number) {
+                if (number % n == 0) {
+                    return result(number / n, list :+ n)
+                }
+                n += 1
+            }
+            list
+        }
+        
+        def main(args: Array[String]) {
+            val primes = Seq(3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53)
+            var futures = List[Future[List[Long]]]()
+            for (n <- primes) {
+                val v = scala.math.pow(2,n).toLong-1
+                val f: Future[List[Long]] = Future {
+                    result(v)
+                }
+                f.map{x=>println(x)}
+                // or f.onComplete{x=>println(x)}
+                futures = f :: futures 
+            }
+            for (future <- futures) {
+                Await.result(future,Duration.Inf)
+                println("Done with one")
+            }
+        }
+    }
+
+
+    // 
+    for (future <- futures) {
+        //a bad idea
+        Await.result(future,Duration.Inf) // this causes the program to wait until the thread is done 
+        println("Done with one")
+    }
+
+
+- registering a callback on the future which is already completed will result in the callback being executed eventually 
+- in the even that multiple callbacks are regitered on the future, the order in which they are executed is not defined 
+- in the event that some callbacks throw exceptions, the other callbacks are still executed regardless 
+- once executed, callbacks are removed from the future object 

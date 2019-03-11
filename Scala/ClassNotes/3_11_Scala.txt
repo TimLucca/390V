@@ -1,0 +1,100 @@
+Translation
+
+    val usdQuote = Future {connection.getCurrentValue(USD)}
+    val chfQuote = Future {connection.getCurrentValue(CHF)}
+    val purchase = for {
+        usd <- usdQuote
+        chf <- chfQuote 
+        if isProfitable(usd, chf)
+    } yield connection.buy(amount, chf)
+    purchase foreach {_ =>
+        println("Purchased " + amount + " CHF")
+    }
+
+    // OR
+
+    val usdQuote = Future {connection.getCurrentValue(USD)}
+    val chfQuote = Future {connection.getCurrentValue(CHF)}
+    val purchase = usdQuote flatMap {
+        usd =>
+        chfQuote
+            .withFilter(chf => isProfitable(usd, chf))
+            .map(chf => connection.buy(amount, chf))
+    }
+
+Filter etc.
+- filter combinator creates a new future which contains the value of the original future only if it satisfies some predicate 
+
+Notes:
+    in scala, a stream is a lazy evaluated generator
+    in java, a stream is like "map, reduce, filter", not normally lazily evaluated
+
+    in python, the GIL is the global interpeter lock, halts all threading on python when mutable writes are detected
+
+Promises
+- futures can also be created using Promises
+- a promse can be thought of as a writable, single-assignment container, which completes a future 
+    - has success and failure methods 
+- a promise p completes the future returned by p.future 
+
+    import scala.concurrent.{Future, Promise}
+    import scala.concurrent.ExecutionContext.Implicits.global
+
+    val p = Promise[T]()
+    val f = p.future
+
+    val producer = Future {
+        val r = produceSomething()
+        p success r     // so the sucess of the promise 
+        continueDoingSomethingUnreleated()
+    }
+
+    val consumer = Future {
+        startDoingSomething()
+        f foreach { r =>
+            doSomethingWithResult()
+        }
+    }
+
+
+Scala Parallel
+https://docs.scala-lang.org/overviews/parallel-collections/overview.html
+
+- the design of Scala's parallel collections library is inspired by and deeply integrated with Scala's sequential collections library
+
+    ParArray
+    ParVector
+    mutable.ParHashMap
+    mutable.ParHashSet
+    immutable.ParHashMap
+    immutable.ParHashSet 
+    ParRange 
+    ParTrieMap
+
+- have to be more careful with parallel caluclations than with futures 
+- parallel is not always faster than sequential 
+
+
+    import scala.collection.parallel.immutable.ParVector 
+    import scala.util.Random
+    import System.nanoTime 
+
+    object Par {
+        def profile[R](code: => R, t: Long = nanoTime) = (code, nanoTime - t)
+
+        private val vec = Vector.fill(1000)(Random.nextInt(100))
+        private val parvec = ParVector.fill(1000)(Random.nextInt(100))
+    }
+
+    def map_add() {
+        val (res1, time1) = profile { vec.map(_ + 42)}
+        println("Sequential vector map: " + time1)
+
+        val (res, time2) = profile { parvec.map(_ + 42)}
+        println("Parallel vector map: " + time2)
+    }
+
+    // the sequential is actually faster in this case 
+    // so, before making something parallel, it is important to know if the time it takes to run is worth the extra overhead 
+    // its also important to make sure no mutable data is shared by threads 
+

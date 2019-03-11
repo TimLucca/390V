@@ -1,0 +1,32 @@
+[0m[[0m[31merror[0m] [0m[0m/home/tim/Documents/school/390V/Scala/ClassNotes/primes_scala.scala:3:42: value implicits is not a member of object scala.concurrent.ExecutionContext[0m
+[0m[[0m[31merror[0m] [0m[0mimport scala.concurrent.ExecutionContext.implicits.global [0m
+[0m[[0m[31merror[0m] [0m[0m                                         ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/tim/Documents/school/390V/Scala/ClassNotes/primes_scala.scala:23:48: Cannot find an implicit ExecutionContext. You might pass[0m
+[0m[[0m[31merror[0m] [0m[0man (implicit ec: ExecutionContext) parameter to your method.[0m
+[0m[[0m[31merror[0m] [0m[0m[0m
+[0m[[0m[31merror[0m] [0m[0mThe ExecutionContext is used to configure how and on which[0m
+[0m[[0m[31merror[0m] [0m[0mthread pools Futures will run, so the specific ExecutionContext[0m
+[0m[[0m[31merror[0m] [0m[0mthat is selected is important.[0m
+[0m[[0m[31merror[0m] [0m[0m[0m
+[0m[[0m[31merror[0m] [0m[0mIf your application does not define an ExecutionContext elsewhere,[0m
+[0m[[0m[31merror[0m] [0m[0mconsider using Scala's global ExecutionContext by defining[0m
+[0m[[0m[31merror[0m] [0m[0mthe following:[0m
+[0m[[0m[31merror[0m] [0m[0m[0m
+[0m[[0m[31merror[0m] [0m[0mimplicit val ec = ExecutionContext.global[0m
+[0m[[0m[31merror[0m] [0m[0m            val f: Future[List[Long]] = Future {[0m
+[0m[[0m[31merror[0m] [0m[0m                                               ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/tim/Documents/school/390V/Scala/ClassNotes/primes_scala.scala:26:18: Cannot find an implicit ExecutionContext. You might pass[0m
+[0m[[0m[31merror[0m] [0m[0man (implicit ec: ExecutionContext) parameter to your method.[0m
+[0m[[0m[31merror[0m] [0m[0m[0m
+[0m[[0m[31merror[0m] [0m[0mThe ExecutionContext is used to configure how and on which[0m
+[0m[[0m[31merror[0m] [0m[0mthread pools Futures will run, so the specific ExecutionContext[0m
+[0m[[0m[31merror[0m] [0m[0mthat is selected is important.[0m
+[0m[[0m[31merror[0m] [0m[0m[0m
+[0m[[0m[31merror[0m] [0m[0mIf your application does not define an ExecutionContext elsewhere,[0m
+[0m[[0m[31merror[0m] [0m[0mconsider using Scala's global ExecutionContext by defining[0m
+[0m[[0m[31merror[0m] [0m[0mthe following:[0m
+[0m[[0m[31merror[0m] [0m[0m[0m
+[0m[[0m[31merror[0m] [0m[0mimplicit val ec = ExecutionContext.global[0m
+[0m[[0m[31merror[0m] [0m[0m            f.map{x=>println(x)}[0m
+[0m[[0m[31merror[0m] [0m[0m                 ^[0m
+[0m[[0m[31merror[0m] [0m[0mthree errors found[0m
