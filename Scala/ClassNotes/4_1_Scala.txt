@@ -116,4 +116,14 @@ Control
 
         val system: ActorSystem = ActorSystem("AkkaEchoServer")
         val my_server: ActorRef = system.actorOf(Server.props)
+
+        def main(args: Array[String]) {
+            val serv = new ServerSocket(9999)
+            while(true) {
+                val s = serv.accept()
+                my_Server ! MySocket(s)     // this 'bang' is sending the MySocket(s) message to my_server
+            }
+        }
     }
+
+    
