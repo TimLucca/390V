@@ -25,5 +25,95 @@ Concurrency
 - requires synchronization of access to shared data
 - mutual exclusion (mutexs) solve this problem 
     - 1 thread / 1 process has exclusive access to this piece of shared data 
-    - uses locks and those locks must be atomic
+    - uses locks and those locks must be atomic (it will run to completion)
 
+What's Wrong with Locks 
+- locks limit concurrency 
+- they are very costly on modern CPU architectures 
+- threads become blocked 
+- easy to deadlock
+- work best on single CPU 
+
+Visibility
+- CPUs don't talk to main memory, they talk to caches (with the exception of things like swap or test/set [locks])
+- writes to one core are not visible to other cores
+- must deal with cache coherence to run concurrently on multiple cores 
+- its a major challenge to deal with visibility from a programmer's point of view 
+
+Call Stacks
+- explicitly spawning and managing threads difficult 
+    - have to track their progress 
+    - what to do when exception occurs?
+        - they have their own call stack 
+        - ex: when a thread throws a 'divide by 0 exception'
+            - the exception is still thrown, however no thread is reported to by default 
+
+Actors
+- the actor model was proposed decads ago by Carl Hewitt as a way to handle parallel processing in a high performance network 
+- allow us to enforce encapsulation without resorting to locks
+    - the OO of parallelism 
+- also allow us to use the model of cooperative enteties reacting to singals, changing state, and sending signals to eachother 
+    - actors themselves are not multithreaded or concurrent
+    - we allow the system to decide how the messages are sent instead of programming the parallelism 
+- instead of calling methods, actors send messages to eachother 
+- sending a message does not transfer the thread of execution from the sender to the destination 
+- an actor can send a message and continue without blocking 
+- react to incoming message sequentially, one at a time 
+- actors have 
+    - a mailbox 
+    - behaviors 
+    - messages 
+
+Errors
+- if an actor encounters an error in a message, it can send a message back 
+- if an actor has an internal error, parent is notified 
+    - actors form trees 
+    - parent has control of what happens 
+        - default is a new child is made and the same message is resent 
+        - other decisions may be defined 
+
+Control 
+- whenever an actor is stopped, all of its childeren are recursively stooped too 
+    - recursive termination 
+    - seen in operating systems as cascading termination 
+- on a failure, the default supervisor strategy is to stop and restart the child 
+
+
+    ex of Echo Server
+
+    import java.net._
+    import java.io._
+    improt akka.actor.{Actor, ActorRef, ActorSystem, Props}
+
+    object Server {
+        def props: Props = Prop[Server]         // the properties (initializer)
+        final case class MySocket(socket: Socket)
+    }
+
+    class server extends Actor {
+        import Server._                         // importing within the class
+
+        def read_and_write(in: BufferedReader, out:BufferedWriter): Unit = {
+            out.write(in.readLine())
+            out.flush()
+            in.close()
+            out.close()
+        }
+
+        def recieve: PartialFunction[Any, Unit] = {
+            case MySocket(s) =>
+                val in = new BufferedReader(new InputStreamReader(s.getInputStream))
+                val out = new BufferedWriter(new OutputStreamWriter(s.getOutputStream))
+                
+                read_and_write(in, out)
+                
+                s.close()
+        }
+    }
+
+    object AkkaEchoServer {
+        import Server._
+
+        val system: ActorSystem = ActorSystem("AkkaEchoServer")
+        val my_server: ActorRef = system.actorOf(Server.props)
+    }
