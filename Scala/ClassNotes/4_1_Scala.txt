@@ -1,0 +1,29 @@
+Akka
+- a set of open-source libraries for desiging scalable, resilient systems that span processor cores and networks
+    - so, can scale not only on processors but across and entire data center
+- to be successful, distributed systems must cope in an enviornment where components crash without responding, messages get lost without a trace on the wire, and networks latency fluctuates
+    - Netflix uses chaos monkey to "cause chaos" on its network in order to test its resilience
+- multi-threaded behavior without the use of low-level concurrency constructs like atomics or locks
+- is built from the ground up as a message passing system, so no resource sharing 
+- transparent communication between systems and their components 
+- a clustered, high-availability architecture that is elastic, scales in or out, on demand
+
+Terminology
+- uses the actor model
+    - provides a level of abstraction
+    - easier to write correct concurrent systems 
+- concurrency means two or more tasks can be executed at the same time, although they do not have to be 
+    - in contrast, parallelism is actually running two or more at the same time 
+- blocking is the possible indefinite delay of one thread by another thread 
+    - non-blocking means no thread can indefinitely delay another 
+- deadlock is when no participants can make progress 
+- starvation happens when there are participants that can make progress, but there might be one or more that cannot 
+- a race condition is when an assumption about the ordering of a set of events might be violated by external non-deterministic effects 
+- race conditions noften arise when multiple threads have a shared mutable state, and the operations of thread on the state might be interleaved causing unexpected behavior 
+
+Concurrency
+- requires synchronization of access to shared data
+- mutual exclusion (mutexs) solve this problem 
+    - 1 thread / 1 process has exclusive access to this piece of shared data 
+    - uses locks and those locks must be atomic
+

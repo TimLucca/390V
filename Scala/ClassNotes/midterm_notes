@@ -1,0 +1,28 @@
+Notes for Midterm
+
+HOF - take functions as a parameter or return functions as a result
+cons, car, cdr
+unnamed functions/lambdas
+partials (currying)
+lazy evaluation 
+scala collection - all derived from sequence
+scala - everything is object, no primatives 
+tail recursion - recursive call is at end
+in scala, all statements are expressions
+in scala, last thing done is what is returned
+flexible syntax
+type enrichment - add functinoality to existing types
+    - ex the isEven and isOdd function to the Int type 
+types - start from Any and go down to Nothing
+    - Option - ex maybe has value, maybe doesnt
+tuples - useful for multiple returns from a function 
+traits - similar to java interfaces, however allow for implementation
+    - mixins
+case classes - always contain values, not variables
+    - do a compare by value 
+objects - statics, thus 'main' must be in an object 
+companion object - allows for creation of static methods for a class 
+pattern matching - ex "match"
+Futures & Promises - easiest and most widely accepted way to do concurrency in Scala 
+    - success contains the object created, failure contains the exception
+    
