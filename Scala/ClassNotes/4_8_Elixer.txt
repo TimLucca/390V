@@ -85,5 +85,137 @@ Defining Functions
     iex> 1..100_000 |> Enum.map(&(&1 * 3))      // eager evaluation 
     iex> 1..100_000 |> Stream.map(&(&1 * 3))    // lazy evaluation 
 
-    
 
+Concurrent Programming in Elixer 
+- Elixer calls it processes, not the same as an OS's process 
+- Processes in Elixer are extremely lightweight in terms of memory and CPU 
+    - even more lightweight than threads 
+- not uncommon to have tens or hundreds of thousands of processes running simultaneously 
+
+    Send and Recieve 
+
+    iex> send self(), {:hello, "world"}
+    {:hello, "world"}
+
+    iex> recieve do 
+    iex> {:hello, msg} -> msg 
+    iex> {:world, _msg} -> "won't match"
+    iex> end 
+    "world"
+
+    iex> recieve do 
+    iex> {:hello, msg} -> msg 
+    iex> after 
+    iex> 1_000 -> "nothing after 1s"
+    iex> end 
+    "nothing after 1s"
+
+    // Getting Process IDs
+    iex> parent = self()
+    #PID<0.104.0>
+
+    iex> spawn fn -> send(parent, {:hello, self()}) end     // spawn is to create new Process IDs 
+    #PID<0.119.0>                                           // if child dies though, it ends up killing the parent too 
+
+    iex> recieve do 
+    iex> {:hello, pid} -> "Got hello from #{inspect pid}"
+    iex> end 
+    "Got hello from #PID<0.119.0>"
+
+    // sooooo
+    iex> spawn_link fn -> raise "oops" end 
+    //raises an exception in the child process, which ends up killing the parent process as well 
+
+- Elixer processes are isolated and don't share states 
+    - a failure in a process will never crash or corrupt the state of another process
+- Links allow process to establish a relationship in case of failure 
+- link process to supervisors so we can send reports 
+
+    State 
+
+    defmodule KV do                 //KV as 'key value'
+        def start_link do 
+            Task.start_link(fn -> loop(%{}) end) 
+        end 
+
+        defp loop(map) do 
+            recieve do 
+                {:get, key, caller} -> 
+                    send caller, Map.get(map, key) 
+                    loop(map)
+                {:put, key, value} -> 
+                    loop(Map.put(map, key, value))
+            end 
+        end 
+    end 
+
+
+    iex> {:ok, pid} = KV.start_link         // creates a new KV process 
+    {:ok, #PID<0.109.0>}                    // so the address of KV.start_link is bound in a tuple with an atom that contains the item to match, ':ok'
+    
+    iex> send pid, {:get, :hello, self()}   //so key is :hello to :get and self() is the PID of this process 
+    {:get, :hello, #PID<0.107.0>}           
+    
+    iex> flush 
+    nil
+    :ok 
+
+    iex> send pid, {:put, :hello, :world}
+    {:put, :hello, :world}
+
+    iex> send pid, {:get, :hello, self()}
+    {:get, :hello, #PID<0.107.0>}
+
+    iex> flush 
+    :world 
+    :ok 
+
+    iex> Process.register(pid, :kv)
+    true 
+
+    // Agents (used to maintain state)
+    iex> {:ok, pid} = Agent.start_link(fn -> %{} end)
+    {:ok, #PID<0.117.0>}
+
+    iex> Agent.update(pid, fn map -> Map.put(map, :hello, :world) end) 
+    :ok
+
+    iex> Agent.get(pid, fn map -> Map.get(map, :hello) end)
+    :world 
+
+
+
+    defmodule EchoServer do 
+        require Logger 
+
+        def accept(port) do 
+            {:ok, socket} = :gen_tcp.listen(port, 
+                [:binary, packet: :line, active: :false, reuseaddr: :true])
+            Logger.info "Accepting connections on port #{port}"
+            loop_acceptor(socket)
+        end 
+
+        defp loop_acceptor(socket) do 
+            {:ok, client} = :gen_tcp.accept(socket)
+            Task.start_link(fn -> serve(client) end) 
+            loop_acceptor(socket) 
+        end 
+
+        defp serve(socket) do 
+            socket |> read_line() |> write_line(socket) 
+            :ok = :gen_tcp.close(socket) 
+        end 
+
+        defp read_line(socket) do 
+            {:ok, data} = :gen_tcp.recv(socket...)
+            write_line(line, socket)
+        end 
+
+        defp write_line(line, socket) do 
+            :gen_tcp.send(socket, line)  
+        end 
+
+        def main(args \\ []) do 
+            accept(9999) 
+        end 
+    end 
