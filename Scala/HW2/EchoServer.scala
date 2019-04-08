@@ -93,9 +93,9 @@ object EchoServer {
     val server = new ServerSocket(9999)
     while(true) {
       var future = Future { server.accept }
-      future.onComplete{ x => x match {
-        case Success(y) => serve(y) 
-        }
+      future onComplete {
+        case Success(s) => serve(s) 
+        case Failure(t) => println("error")
       }
     }
   }
