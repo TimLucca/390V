@@ -78,25 +78,22 @@ object EchoServer {
   }
 
   def serve(s: Socket): Unit = {
-      //val s = server.accept()
-        val in = new BufferedReader(new InputStreamReader(s.getInputStream))
-        val out = new BufferedWriter(new OutputStreamWriter(s.getOutputStream))
-        val printer = new PrintWriter(s.getOutputStream)
+    //val s = server.accept()
+    val in = new BufferedReader(new InputStreamReader(s.getInputStream))
+    val out = new BufferedWriter(new OutputStreamWriter(s.getOutputStream))
+    val printer = new PrintWriter(s.getOutputStream)
 
-        read_and_write(in, out, printer)
-      
-        s.close()
-      }
+    read_and_write(in, out, printer)
+  
+    s.close()
+  }
       
 
   def main(args: Array[String]) {
     val server = new ServerSocket(9999)
     while(true) {
-      var future = Future { server.accept }
-      future onComplete {
-        case Success(s) => serve(s) 
-        case Failure(t) => println("error")
-      }
+      val s = server.accept
+      Future {serve(s)}
     }
   }
 }
