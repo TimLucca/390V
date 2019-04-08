@@ -1,0 +1,89 @@
+Elixer
+- &1 is the first parameter parameter to a function 
+- default parameters use \\ nottation 
+
+- package manager is mix
+    - ebin - contains the compiled bytecode
+    - lib - contains the elixer code (usually .ex files)
+    - test - contains tests (usually .exs files)
+
+Defining Functions
+- def/2 for public functions 
+- defp/2 for private functions 
+
+    defmodule Math do 
+        def zero?(0), do: true
+        def zero?(_), do: false
+    end 
+
+    fun = &Math.zero?/1         // this is capturing the function, where 'fun' becomes a pointer to the Math.zero function 
+
+
+    iex> fun = &(&1 + 1)        // so this function increments the first parameter by 1
+    iex> fun.(41)
+    42
+    iex> fun = fn x -> x + 1 end // this is the same as the function above, but in a mannar similar to what we are use to 
+    iex> fun.(41)
+    42
+
+    defmodule Concat do 
+        def join(a, b, sep \\ " ") do
+            a <> sep <> b 
+        end 
+    end 
+
+                                // the double backslash in the def join is the default parameter that can be changed 
+
+    ies> Concat.join("hello", "world") 
+    "hello world"
+
+    ies> Concat.join("hello", "world", "_")
+    "hello_world"
+
+
+    defmodule Recursion do 
+        def print_multiple_times(msg, n) when n <= 1 do     // this is a guard to chose which function to use since they are both same name and parameters 
+            IO.puts msg                                     // allows us to not have to rely on conditionals (like if/else). this is also tail recursive 
+        end 
+
+        def print_multiple_times(msg, n) do
+            IO.puts msg 
+            print_multiple_times(msg, n-1)
+        end 
+    end 
+
+
+    defmodule Math do 
+        def sum_list([head | tail], accumulator) do 
+            sum_list(tail, head + accumulator)
+        end 
+
+        def sum_list([], accumulator) do 
+            accumulator
+        end 
+    end 
+
+
+    // Map and Reduce 
+    // both forms of reduce and map do the same 
+
+    Enum.reduce([1, 2, 3], 0, fn(x, acc) -> x + acc end)
+    Enum.map([1, 2, 3], fn(x) -> x * 2 end)
+
+    Enum.reduce([1, 2, 3], 0, &+/2) 
+    Enum.map([1, 2, 3], &(&1 * 2)) 
+
+
+    // Pipe Operator, allows chaining of operations 
+    iex> odd? = &(rem(&1, 2) != 0)
+    iex> total_sum = 1..100_000 |> Enum.map(&(&1 * 3)) |> Enum.filter(odd?) |> Enum.sum     //this is from 1 to 100,000 (the _ == ,) 
+    // so this function multiplies every number from 1 to 100,000
+    // then, it filters all the numbers and keeps odds, drops evens 
+    // the it adds everything left over 
+
+    //Streams 
+    iex> 1..100_000 |> Enum.map(&(&1 * 3))      // eager evaluation 
+    iex> 1..100_000 |> Stream.map(&(&1 * 3))    // lazy evaluation 
+
+    
+
