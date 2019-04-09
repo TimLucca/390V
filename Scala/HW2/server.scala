@@ -3,7 +3,7 @@ import java.io._
 import scala.io._
 import java.util.StringTokenizer
 
-object EchoServer {
+object server {
      val home = "index.html"
     val fourOhfour = "404.html" 
     def readFdata(file: File, fileLen: Int): Array[Byte] = {

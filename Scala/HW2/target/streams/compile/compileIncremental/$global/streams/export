@@ -1,0 +1,1 @@
+scalac -classpath /home/tim/Documents/school/390V/Scala/HW2/target/scala-2.12/classes -bootclasspath /home/tim/.sbt/boot/scala-2.12.7/lib/scala-library.jar /home/tim/Documents/school/390V/Scala/HW2/EchoServer.scala /home/tim/Documents/school/390V/Scala/HW2/server.scala
