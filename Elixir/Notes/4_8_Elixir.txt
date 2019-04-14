@@ -1,6 +1,7 @@
-Elixer
+Elixir
 - &1 is the first parameter parameter to a function 
 - default parameters use \\ nottation 
+- iex or iex.bat for REPL
 
 - package manager is mix
     - ebin - contains the compiled bytecode
