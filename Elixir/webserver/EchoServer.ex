@@ -31,22 +31,22 @@ defmodule EchoServer do
 
     defp proc_req(socket, line) do 
         [req, page, prot] = String.split(line, " ")
-        file = get_file(String.replace_prefix(page, "/", ""))
-        send_header(socket, prot)
+        {status_code, status, file} = get_file(String.replace_prefix(page, "/", ""))
+        send_header(socket, String.replace(prot, "\n", ""), status_code, status)
         file_data(file)
     end
 
     defp get_file(page) do
         cond do 
-            page == "" -> "index.html"
-            File.exists?(page) -> page 
-            true -> "404.html"
+            page == "" -> {200, "OK", "index.html"}
+            File.exists?(page) -> {200, "OK", page} 
+            true -> {404, "Not Found", "404.html"}
         end 
     end 
 
-    defp send_header(socket, prot) do
+    defp send_header(socket, prot, status_code, status) do
         {{year, mon, day}, _} = :calendar.local_time()
-        :gen_tcp.send(socket, "#{prot} 200 OK\n")
+        :gen_tcp.send(socket, "#{prot} #{status_code} #{status}\n")
         :gen_tcp.send(socket, "Date: #{mon}/#{day}/#{year}\n")
         :gen_tcp.send(socket, "Server: Elixier Server : 0.01\n")
         :gen_tcp.send(socket, "Content-type: text/html\n\n")
