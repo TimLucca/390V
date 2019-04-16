@@ -30,22 +30,30 @@ defmodule EchoServer do
     end 
 
     defp proc_req(socket, line) do 
-        [req, file, prot] = String.split(line, " ")
+        [req, page, prot] = String.split(line, " ")
+        file = get_file(String.replace_prefix(page, "/", ""))
         send_header(socket, prot)
         file_data(file)
     end
 
+    defp get_file(page) do
+        cond do 
+            page == "" -> "index.html"
+            File.exists?(page) -> page 
+            true -> "404.html"
+        end 
+    end 
+
     defp send_header(socket, prot) do
-        :gen_tcp.send(socket, "HTTP/1.1 200 OK\n")
-        :gen_tcp.send(socket, "Date: 4/16/2019\n")
+        {{year, mon, day}, _} = :calendar.local_time()
+        :gen_tcp.send(socket, "#{prot} 200 OK\n")
+        :gen_tcp.send(socket, "Date: #{mon}/#{day}/#{year}\n")
         :gen_tcp.send(socket, "Server: Elixier Server : 0.01\n")
-        :gen_tcp.send(socket, "Content-type: text/html\n")
-        :gen_tcp.send(socket, "Content-length: \n\n")
-        IO.puts("sent header")
+        :gen_tcp.send(socket, "Content-type: text/html\n\n")
     end
 
-    defp file_data(name \\ "index.html") do
-        {:ok, file} = File.open("index.html")
+    defp file_data(name) do
+        {:ok, file} = File.open(name)
         data = IO.binread(file, :all)
         :ok = File.close(file)
         data
