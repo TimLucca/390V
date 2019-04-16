@@ -17,6 +17,7 @@ defmodule EchoServer do
     defp serve(socket) do  
         socket |> read_line() |> write_line(socket)
         :ok = :gen_tcp.close(socket)
+        Logger.info "Connection closed"
     end 
 
     defp read_line(socket) do 
@@ -32,7 +33,7 @@ defmodule EchoServer do
     defp proc_req(socket, line) do 
         [req, page, prot] = String.split(line, " ")
         {status_code, status, file} = get_file(String.replace_prefix(page, "/", ""))
-        send_header(socket, String.replace(prot, "\n", ""), status_code, status)
+        send_header(socket, String.replace(prot, "\r\n", ""), status_code, status)
         file_data(file)
     end
 
@@ -59,9 +60,7 @@ defmodule EchoServer do
         data
     end 
 
-
     def main(args \\ []) do 
         accept(9999)
     end 
 end
-
