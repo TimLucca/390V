@@ -1,4 +1,4 @@
-defmodule EchoServer do
+defmodule WebServer do
     require Logger 
 
     def accept(port) do
@@ -13,7 +13,7 @@ defmodule EchoServer do
         Task.start_link(fn -> serve(client) end)
         loop_acceptor(socket)
     end 
-    
+
     defp serve(socket) do  
         socket |> read_line() |> write_line(socket)
         :ok = :gen_tcp.close(socket)
@@ -21,12 +21,19 @@ defmodule EchoServer do
     end 
 
     defp read_line(socket) do 
-        {:ok, data} = :gen_tcp.recv(socket, 0)
-        data
+        case :gen_tcp.recv(socket, 0) do 
+            {:ok, data} -> data 
+            {:error, reason} -> {:error, reason}
+        end
+    end 
+
+    defp write_line(line, socket) when is_tuple(line) do 
+        {:error, reason} = line
+        Logger.info "Error: #{reason}"
     end 
 
     defp write_line(line, socket) do 
-        IO.puts(line)
+        Logger.info "Request: #{line}"
         :gen_tcp.send(socket, proc_req(socket, line)) 
     end 
 
