@@ -1,0 +1,163 @@
+Thread Safety 
+
+- trhread safe code is about managing access to state, in particular shared mutable state 
+- primary mechanism in java is "synchronized" keyword 
+    - syncrhonization should be done on the same shared, mutable state.  Aka all threads should be on the same lock 
+    - also uses volatile, locks, atomic variables, etc
+- good OO techniques (encapsulation, immutability, and clear specification of invariants) help with thread safety 
+- there isn't a standard for what thread safe means 
+    - some say thread safe is when a class behaves correctly when accessed from multiple threads regardless of scheduling, with no additional synchronization or other coordination on the part of the  calling code
+    - some of the early classes from Java are not thread safe, so if they are used it is up to the developer to do the scheduling (ex: String buffer is not thread safe)
+        - typically, there is something in the collections that will be able to replace the unsafe class 
+        - Java has thread safe classes for most use cases 
+- thread-safe classes encapsulate any needed synchronization so that clients need not provide their own 
+- stateless objects are always thread safe 
+    - microservices, lambdas, etc 
+        - ex: writing to a database through a microservice will keep the code free of state, state only persisting in the database 
+        - AWS has lambdas (microfunctions) that are stateless functions 
+
+
+Race Conditions 
+
+- the most common type is check-then-act 
+    - observation is stale, but acted on 
+        ex: 
+        @NotThreadSafe 
+        public class LazyInitRace{
+            private ExpensiveObject instance = null; //takes a long time to create 
+
+            public ExpensiveObject getInstance() {
+                if (instance == null)
+                    instance = new ExpensiveObject();
+                return instance;
+            }
+        }
+
+        // so, one thread can come in and say "oh, instance == null, im gonna make a new ExpensiveObject!"
+        // because the object takes a long time to make, another thread can come in and do the exact same thing before the instance is created!
+- race conditions don't always cause problems
+    - this makes it harder to debug 
+    - will typically show up when the system is stressed
+- code developed in one enviornment must be tested in the production enviornment as well
+    - ex: optimization may show hidden bugs that do not appear in the development enviornment, but will appear when the product is released
+- atomic operations are when from another thread's perspective, all of the operations have completed, or none of them have
+    - or from the same thread's perspective 
+    - in general, atomic hardware instructions needs to exist 
+        - ex: assembly 
+        - (test and set / swap) are the primary instructions 
+- whenever possible, use existing thread-safe objects 
+    - ex: AtomicLong 
+        - multiple references to Atomics are not atomic 
+
+
+Intrinsic Locks 
+
+- a blocking call so only one thread has access to a method at a time 
+- synchronized(lock) {}
+- synchronized methods use the object's Class object 
+    - for every object you have, it has a reference to the Class that created it 
+    - allows for the methods to generally be mutually exclusive, but also blocking 
+- if a thread attempts to enter a lock it owns, it succeeds (reentrant)
+        ex: 
+        class A {
+            synchronized foo() {}
+        }
+        class B extends A {
+            synchronized foo() { super() }  // this needs to be able to access the parent's foo. when it is called, it locks but it still needs to go to the parent's foo. reentrant allows this 
+        }
+- if synchronization is used to coordinate access to a variable, it must be used everywhere the variable is accessed, not just the writes 
+- the same lock must be used each time 
+- if multiple variables are involved in an invariant, all must be guarded by the same lock 
+- CPUs do not guarantee cache coherency (additional keyword "volatile" must be used) aka once its written, all threads will see the same value 
+
+
+- synchronizing every method is not enough 
+        ex: (vectors are thread safe), the following is a check-then-act 
+        if(!vector.contains(element))
+            vector.add(element)
+
+- Synchrnoization also involves memory visibility 
+- in general, no guarantee that a read from one thread will ever see the write from another 
+        ex: 
+        public class NoVisibility {
+            private static boolean ready;
+            private static int number;
+
+            private static class ReaderThread extends Thread {
+                public void run() {
+                    while(!ready)
+                        Thread.yield();
+                    System.out.println(number);
+                }
+            }
+            public static void main(String[] args) {
+                new ReaderThread().start();
+                number = 42;        // this variable 'number' may be rearranged by the compiler, it is not dependant on the 'ready' value, also 'number' is never even used by the thread that spawns it 
+                ready = true;       // this variable 'ready' may never be seen by the ReaderThread if it is written on a different CPU's L1 cache 
+            }
+        }
+
+- when a thread reads a value, it is at least a value written by another thread 
+    - Java calls this "out of thin air" safety 
+- except for 64-bit values (longs/doubles)
+    - they act as 2 pushes or 2 pops on the Java runtime stack 
+    - so, its possible for a thread to read half of the old value and half of the new value 
+- intrinsic locks guarantee visibility 
+    - everything inside a synchronized block is volatile without having to declare volatile 
+    - ends up writing all things to main memory after a block is finished (In Java, the "happens before" guarantee)
+- not just about mutual exclusion 
+
+
+Volatile 
+
+- a weaker form of synchronization 
+    - volatile variables do not deal with mutexes 
+- compiler and runtime don't reorder 
+- values are not placed in registers or cache 
+- read always return most recent write 
+- odes not lock and therefore does not block 
+- writes all values when writing one 
+        ex: 
+        int a = 8;
+        int b = 6;
+        int c = 4;
+        volatile d = 42;
+        // a, b, c, and d are all written to main memory here 
+- does not make value++ atomic 
+- does not guard multiple values 
+- locking guarantees both atomicity and visibility, volatiles only the latter 
+- often used for flag variables 
+
+
+Publication and Escape 
+
+- don't expose internal variables
+- public static globals, for example 
+        ex of escape 
+        class UnsafeStates {
+            private String[] states = new String[] {
+                "AK", "AL" /*...*/
+            };
+
+            public String[] getStates() {
+                return states;          // this is known as "publication". in Java, the reference to the array will be returned allowing whatever called it access to change the internals of the array. 
+            }                           // can be fixed by making a copy of the array 
+        }
+
+
+Aliens 
+
+- an alien method is one not controlled by calling class 
+    - from other classes 
+    - non-private and non-final in same class 
+    - both publish information 
+- so, if we want to return an array to an alien, we need to make a copy of it 
+    - this allows the alien to view it without the possibility to change it 
+
+
+Constructors 
+- do not start threads in constructors 
+    - that thread will launch and you'll have a partially constructed object 
+- okay to create threads in constructors (although no reason to)
+
+
