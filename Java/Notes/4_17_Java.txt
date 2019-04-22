@@ -1,3 +1,5 @@
+BOOK - Java Concurrency and Practice
+
 Thread Safety 
 
 - trhread safe code is about managing access to state, in particular shared mutable state 

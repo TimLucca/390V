@@ -40,7 +40,8 @@ defmodule WebServer do
     defp proc_req(socket, line) do 
         [req, page, prot] = String.split(line, " ")
         {status_code, status, file} = get_file(String.replace_prefix(page, "/", ""))
-        send_header(socket, String.replace(prot, "\r\n", ""), status_code, status)
+        {type, ext} = get_file_info(file)
+        send_header(socket, String.replace(prot, "\r\n", ""), status_code, status, type, ext)
         file_data(file)
     end
 
@@ -52,12 +53,22 @@ defmodule WebServer do
         end 
     end 
 
-    defp send_header(socket, prot, status_code, status) do
+    defp get_file_info(file) do 
+        [name, ext] = String.split(file, ".")
+        cond do
+            Enum.member?(["html", "css"], ext) -> {"text", ext}
+            ext == "js" -> {"text", "javascript"}
+            Enum.member?(["jpg", "png", "gif", "jpg"]) -> {"image", ext}
+            true -> {"unknown", ext}
+        end 
+    end 
+
+    defp send_header(socket, prot, status_code, status, type, ext) do
         {{year, mon, day}, _} = :calendar.local_time()
         :gen_tcp.send(socket, "#{prot} #{status_code} #{status}\n")
         :gen_tcp.send(socket, "Date: #{mon}/#{day}/#{year}\n")
         :gen_tcp.send(socket, "Server: Elixier Server : 0.01\n")
-        :gen_tcp.send(socket, "Content-type: text/html\n\n")
+        :gen_tcp.send(socket, "Content-type: #{type}/#{ext}\n\n")
     end
 
     defp file_data(name) do
@@ -68,6 +79,6 @@ defmodule WebServer do
     end 
 
     def main(args \\ []) do 
-        accept(9999)
+        accept(80)
     end 
 end

@@ -1,0 +1,55 @@
+Thread Confinement 
+
+- if a thread doesnt share info
+- data accessed by only a single thread 
+- JDBC pooled connection are not necessarily thread safe 
+    - but individual operations cocur within a single thread and are therefore safe 
+- some GUIs are single-threaded and therefore thread-safe (even if components arent)
+- volatiles are guaranteed to be thread safe if only one thread writes to them 
+
+Stack Confinement 
+- locals are intrinsically confined to a single thread 
+    - all actions (in a local method) are confined to a single thread 
+
+Immutable 
+- immutable object are always thread-safe 
+- in java, immutable if 
+    - cant be modififed after construction 
+    - all fields are final 
+    - it is properly constructed ("this" cannot escape)
+
+    ex: Mutable to Immutable 
+
+    public final class ThreeStooges {
+        private final Set<String> stooges = new HashSet<String>();
+
+        public ThreeStooges() {
+            stooges.add("Moe");
+            stooges.add("Larry");
+            stooges.add("Curly");
+        }
+
+        public boolean isStooge(String name) {
+            return stooges.contains(name);
+        }
+    }
+
+- construction in Java is guarenteed to be thread safe (although not atomic)
+    - when using shared mutable data, you'd have to synchronize the data
+- java guarantees that immutable objects have initialization safety 
+- other threads cannot see a partially constructed object
+
+
+Final 
+- good practice to declare immutable as final 
+- final does not guarantee object is immutable, only that the reference always refers to the same object 
+
+
+Publishing an Object Safely 
+- both the reference and the object must be made visible to other threads at the same time via:
+    - using static initializer
+        - this is the first thing that happens when a new object is created 
+    - store reference in a volatile or AtomicReference
+    - store reference in a final 
+    - locking 
+
