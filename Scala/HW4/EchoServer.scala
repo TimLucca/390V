@@ -29,6 +29,7 @@ object Server {
 
 class Server extends Actor {
   import Server._
+
   val fourOhfour = "404.html"
   val index = "index.html"
 
@@ -97,14 +98,15 @@ class Server extends Actor {
     out.close()
     printer.close()
   }
-
-  def serve(s: Socket): Unit = {
-    val in = new BufferedReader(new InputStreamReader(s.getInputStream))
-    val out = new BufferedWriter(new OutputStreamWriter(s.getOutputStream))
-    val printer = new PrintWriter(s.getOutputStream)
-
-    read_and_write(in, out, printer)
   
-    s.close()
-  }
+  def receive: PartialFunction[Any, Unit] = {
+      case MySocket(s) => 
+        val in = new BufferedReader(new InputStreamReader(s.getInputStream))
+        val out = new BufferedWriter(new OutputStreamWriter(s.getOutputStream))
+        val printer = new PrintWriter(s.getOutputStream)
+
+        read_and_write(in, out, printer)
+      
+        s.close()
+    }
 }
