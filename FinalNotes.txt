@@ -1,0 +1,106 @@
+akka
+actors
+exlier
+concurrentcy in java
+akka
+  open source
+  going beyond a single chip
+  future in scala
+    to do threading
+  akka works in multi cpu - data center
+  actors
+    picks it up from erlong
+    a way to express conccurentcy
+    allows for paraellism
+    program apps in concurrent model
+  blocking vs non
+    futures in scala - non blocking, didnt want to wait for it all
+    use non blocking whenever possible
+  visability
+    when a write occurs, who gets to see it
+    cache comparisy
+  actor based model for computation
+    send messages to each other
+    model our app to this we wont have visabilty problems, 
+    erlong and elixer based on this
+    there isnt a transfer in control
+    can send messages and continue on
+    have a mailbox
+    if it encounters an error, it sends an error back
+    forms trees
+    if an actor is stopped, all the children are recursivly stopped as well
+    number of different supervisor strategies
+    sending of inmutable messages
+    actors can send and receive from multiple actors or to
+    one actor can block the forwards progress of other actors
+    no deadlocks
+exlier
+  based on erlong runs on erlongs VM
+  funtional program language
+  exlier is much better looking than erlong, and you get more things
+  has string interpulation
+  aynonumous function are also closures
+  list
+    all data nothing is mutable 
+    functions returns new copies of save data
+      we get concurrentcy 
+  use of tuples
+  compare against types that arent the same (ex 1 = atom)
+  match operator
+    =
+    doesnt function the same as = in other languages
+  guarded matching
+  function capturing
+    match operators applied to functions
+  tail recursion
+  map and reduce
+  we have messages
+    write a receive function and use match operator to do multiple messages
+    send - send to PID 
+    receive - 
+  to create a process we call a spawn
+  processes are isolated
+    the failure of one process wont affect others
+    we can create links to other process to get notified if there is a failure
+Microservices
+    - called lambdas because they dont have state (like lambdas in java)
+race conditions
+    - check then act
+Atomics in Java 
+    - x++ not atomic, actually 3 operations 
+    atomicity is that one operation happens 'all at once'
+    it is only seen when the operation is done, no 'in between' looking 
+    in java, writes to ints are atomic, but writes to long are not 
+Intrinsic locks
+    - synchronized methods automatically set locks 
+    - reentrancy: ex locking a method that calls a super 
+synchronization 
+    - only one thread can have access to something at a time 
+    - not the same as visibility 
+vector operations are synchronized 
+    - still has the check then act problem 
+in java, it is never guarenteed a write in one thread will be visible in another thread 
+out-of-thin-air guarentee - a value is always set by some thread, no random values 
+volatile & atomic - guarentee visibility 
+visible ensures writes are written to main memory, not cache
+defensive copies -> when returning from a method, you return a copy of the value, not the actual value. Otherwise, you give a reference to your local variable which can then be modified externally
+synchronized collections
+    - can take a normal data structure and synchronizes it with a wrapper 
+    - ex: synchronized list, synchronized map 
+    - downside: when you're doing an operation that requires synchronization, you lock down the entire map 
+concurrent collections 
+    - breaks down to the smallest derivative ex:
+        - concurrent map would break down the function into a bunch of functions with 1 parameter then 
+when to use concurrent/synchronized/
+    - doing writes?
+    - ratio of reads to writes 
+in concurrent collection, is empty and size of is never truly known 
+java streams
+    - gives us a subset of functional programming in java
+    - has predicates (a statement that returns true or false)
+    3 parts of streams 
+        supplier (ie ranges, gets)
+        operator (ie map, filter)
+        consumer (collect)
+
+        

@@ -224,3 +224,53 @@ IntStream.generate(() -> ThreadLocalRandom.current()
 9*/
 
 
+
+
+
+
+
+
+
+
+{
+    private static TreeMap<String, Integer> map = new TreeMap<>();
+    public static void main (String args[]) throws java.io.IOException
+    {
+        final String DIGITS = "^[0*9]+$";
+        final String SPACES = "\\s+"
+
+        List <Double> number = Files.line(Paths.get(args[0]))
+            .map(l -> l.split(SPACES))
+            .flatMap(Arrays::stream)
+            .map(s -> {
+                if (!s.matches(DIGITS)) {
+                    Integer val = map.get(s);
+                    if(val == null)
+                        map.put(s, 1);
+                    else 
+                        map.put(s, ++val);
+                }
+                return s;
+            })
+            .filter(s -> s.matches(DIGITS))
+            .map(s -> Double.parseDouble(s))
+            .collect(Collectors.toList());
+        
+        int numberOfNumbers = numbers.size();
+        if(numberOfNumbers > 0) {
+            Collections.sort(numbers);
+            System.out.println("Sum: " + String.format("%.02f", numbers.stream().mapToDouble(a -> a).sum()));
+            System.out.println("Average: " + String.format("%.02f", numbers.stream().mapToDouble(a -> a).average().getAsDouble()));
+            System.out.println("Median: " + String.format("%.02f", numbers.get(numberOfNumbers/2)));
+        }
+
+        double numberOfWords = map.values().stream().mapToInt(i -> i).sum();
+        double total = numberOfNumbers + numberOfWords;
+        System.out.println("Percentage of numbers: " + String.format("%.02f", (numberOfNumbers/total) * 100.0));
+        System.out.println(map.decendingMap());
+    }
+}
+
+
+
+
